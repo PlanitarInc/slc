@@ -805,6 +805,170 @@ func ExampleOverlapFunc() {
 	// true
 }
 
+func TestIntersect(t *testing.T) {
+	RegisterTestingT(t)
+
+	t.Run("int", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		groupedTestCases := getBinaryOperationCases(id[int], id[int])
+
+		for groupName, testCases := range groupedTestCases {
+			t.Run(groupName, func(t *testing.T) {
+				RegisterTestingT(t)
+
+				for _, tc := range testCases {
+					t.Run(tc.Name(), func(t *testing.T) {
+						RegisterTestingT(t)
+
+						if len(tc.Intersect) == 0 {
+							Expect(Intersect(tc.Left, tc.Right)).To(BeNil())
+						} else {
+							Expect(Intersect(tc.Left, tc.Right)).To(Equal(tc.Intersect))
+						}
+					})
+				}
+			})
+		}
+	})
+
+	t.Run("string", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		genFn := func(n int) string {
+			return string([]byte{byte('a') + byte(n)})
+		}
+
+		groupedTestCases := getBinaryOperationCases(genFn, genFn)
+
+		for groupName, testCases := range groupedTestCases {
+			t.Run(groupName, func(t *testing.T) {
+				RegisterTestingT(t)
+
+				for _, tc := range testCases {
+					t.Run(tc.Name(), func(t *testing.T) {
+						RegisterTestingT(t)
+
+						if len(tc.Intersect) == 0 {
+							Expect(Intersect(tc.Left, tc.Right)).To(BeNil())
+						} else {
+							Expect(Intersect(tc.Left, tc.Right)).To(Equal(tc.Intersect))
+						}
+					})
+				}
+			})
+		}
+	})
+}
+
+func ExampleIntersect() {
+	n := []int{1, 2, 3, 4, 5}
+
+	fmt.Println(Intersect(n, []int{9, 8, 7}))
+	fmt.Println(Intersect(n, []int{1}))
+	fmt.Println(Intersect(n, []int{1, 2, 3, 4, 5, 6, 7}))
+	// Output:
+	// []
+	// [1]
+	// [1 2 3 4 5]
+}
+
+func TestIntersectFunc(t *testing.T) {
+	RegisterTestingT(t)
+
+	t.Run("int", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		equalsInt := func(a, b int) bool { return a == b }
+		groupedTestCases := getBinaryOperationCases(id[int], id[int])
+
+		for groupName, testCases := range groupedTestCases {
+			t.Run(groupName, func(t *testing.T) {
+				RegisterTestingT(t)
+
+				for _, tc := range testCases {
+					t.Run(tc.Name(), func(t *testing.T) {
+						RegisterTestingT(t)
+
+						if len(tc.Intersect) == 0 {
+							Expect(IntersectFunc(tc.Left, tc.Right, equalsInt)).To(BeNil())
+						} else {
+							Expect(IntersectFunc(tc.Left, tc.Right, equalsInt)).To(Equal(tc.Intersect))
+						}
+					})
+				}
+			})
+		}
+	})
+
+	t.Run("string", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		equalsStr := func(a, b string) bool { return a == b }
+		genFn := func(n int) string {
+			return string([]byte{byte('a') + byte(n)})
+		}
+		groupedTestCases := getBinaryOperationCases(genFn, genFn)
+
+		for groupName, testCases := range groupedTestCases {
+			t.Run(groupName, func(t *testing.T) {
+				RegisterTestingT(t)
+
+				for _, tc := range testCases {
+					t.Run(tc.Name(), func(t *testing.T) {
+						RegisterTestingT(t)
+
+						if len(tc.Intersect) == 0 {
+							Expect(IntersectFunc(tc.Left, tc.Right, equalsStr)).To(BeNil())
+						} else {
+							Expect(IntersectFunc(tc.Left, tc.Right, equalsStr)).To(Equal(tc.Intersect))
+						}
+					})
+				}
+			})
+		}
+	})
+
+	t.Run("mix", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		equalsFn := func(a int, b string) bool { return strconv.Itoa(a) == b }
+		groupedTestCases := getBinaryOperationCases(id[int], strconv.Itoa)
+
+		for groupName, testCases := range groupedTestCases {
+			t.Run(groupName, func(t *testing.T) {
+				RegisterTestingT(t)
+
+				for _, tc := range testCases {
+					t.Run(tc.Name(), func(t *testing.T) {
+						RegisterTestingT(t)
+
+						if len(tc.Intersect) == 0 {
+							Expect(IntersectFunc(tc.Left, tc.Right, equalsFn)).To(BeNil())
+						} else {
+							Expect(IntersectFunc(tc.Left, tc.Right, equalsFn)).To(Equal(tc.Intersect))
+						}
+					})
+				}
+			})
+		}
+	})
+}
+
+func ExampleIntersectFunc() {
+	n := []int{1, 2, 3, 4, 5}
+
+	equalsFn := func(a int, b string) bool { return strconv.Itoa(a) == b }
+
+	fmt.Println(IntersectFunc(n, []string{"9", "8", "7"}, equalsFn))
+	fmt.Println(IntersectFunc(n, []string{"1"}, equalsFn))
+	fmt.Println(IntersectFunc(n, []string{"1", "2", "3", "4", "5", "6", "7"}, equalsFn))
+	// Output:
+	// []
+	// [1]
+	// [1 2 3 4 5]
+}
+
 func TestDiff(t *testing.T) {
 	RegisterTestingT(t)
 

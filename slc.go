@@ -144,8 +144,34 @@ func FilterOut[T any](slice []T, predicateFn func(elem T) bool) []T {
 	return res
 }
 
-// Diff returns the difference between the given slices: a - b. The type of the
-// slice elements must be comparable.
+// Overlap returns true if two slices have at least one common element.
+// The type of the slice elements must be comparable.
+func Overlap[T comparable](a, b []T) bool {
+	for i := range a {
+		if Includes(b, a[i]) {
+			return true
+		}
+	}
+
+	return false
+}
+
+// OverlapFunc returns true if two slices have at least one common element.
+// The elements are compared using the given function, equalsFn.
+func OverlapFunc[T, S any](a []T, b []S, equalsFn func(e1 T, e2 S) bool) bool {
+	for i := range a {
+		for j := range b {
+			if equalsFn(a[i], b[j]) {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+// Diff returns the difference between the given slices: a - b.
+// The type of the slice elements must be comparable.
 func Diff[T comparable](a, b []T) []T {
 	var res []T
 	for i := range a {

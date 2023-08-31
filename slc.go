@@ -155,3 +155,15 @@ func Diff[T comparable](a, b []T) []T {
 	}
 	return res
 }
+
+// DiffFunc returns the difference between the given slices: a - b.
+// The elements are compared using the given function, equalsFn.
+func DiffFunc[T, S any](a []T, b []S, equalsFn func(e1 T, e2 S) bool) []T {
+	var res []T
+	for i := range a {
+		if !IncludesFunc(b, func(elem S) bool { return equalsFn(a[i], elem) }) {
+			res = append(res, a[i])
+		}
+	}
+	return res
+}

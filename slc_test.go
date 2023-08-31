@@ -647,7 +647,7 @@ func TestDiff(t *testing.T) {
 	t.Run("int", func(t *testing.T) {
 		RegisterTestingT(t)
 
-		groupedTestCases := getBinaryOperationCases(func(n int) int { return n })
+		groupedTestCases := getBinaryOperationCases(id[int], id[int])
 
 		for groupName, testCases := range groupedTestCases {
 			t.Run(groupName, func(t *testing.T) {
@@ -674,7 +674,7 @@ func TestDiff(t *testing.T) {
 		genFn := func(n int) string {
 			return string([]byte{byte('a') + byte(n)})
 		}
-		groupedTestCases := getBinaryOperationCases(genFn)
+		groupedTestCases := getBinaryOperationCases(genFn, genFn)
 
 		for groupName, testCases := range groupedTestCases {
 			t.Run(groupName, func(t *testing.T) {
@@ -709,14 +709,111 @@ func ExampleDiff() {
 	// []
 }
 
-type binaryTestCase[T any] struct {
+func TestDiffFunc(t *testing.T) {
+	RegisterTestingT(t)
+
+	t.Run("int", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		equalsInt := func(a, b int) bool { return a == b }
+		groupedTestCases := getBinaryOperationCases(id[int], id[int])
+
+		for groupName, testCases := range groupedTestCases {
+			t.Run(groupName, func(t *testing.T) {
+				RegisterTestingT(t)
+
+				for _, tc := range testCases {
+					t.Run(tc.Name(), func(t *testing.T) {
+						RegisterTestingT(t)
+
+						if len(tc.Diff) == 0 {
+							Expect(DiffFunc(tc.Left, tc.Right, equalsInt)).To(BeNil())
+						} else {
+							Expect(DiffFunc(tc.Left, tc.Right, equalsInt)).To(Equal(tc.Diff))
+						}
+					})
+				}
+			})
+		}
+	})
+
+	t.Run("string", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		equalsStr := func(a, b string) bool { return a == b }
+		genFn := func(n int) string {
+			return string([]byte{byte('a') + byte(n)})
+		}
+		groupedTestCases := getBinaryOperationCases(genFn, genFn)
+
+		for groupName, testCases := range groupedTestCases {
+			t.Run(groupName, func(t *testing.T) {
+				RegisterTestingT(t)
+
+				for _, tc := range testCases {
+					t.Run(tc.Name(), func(t *testing.T) {
+						RegisterTestingT(t)
+
+						if len(tc.Diff) == 0 {
+							Expect(DiffFunc(tc.Left, tc.Right, equalsStr)).To(BeNil())
+						} else {
+							Expect(DiffFunc(tc.Left, tc.Right, equalsStr)).To(Equal(tc.Diff))
+						}
+					})
+				}
+			})
+		}
+	})
+
+	t.Run("mix", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		equalsFn := func(a int, b string) bool { return strconv.Itoa(a) == b }
+		testCases := getBinaryOperationCases(id[int], strconv.Itoa)
+
+		for groupName, testCases := range testCases {
+			t.Run(groupName, func(t *testing.T) {
+				RegisterTestingT(t)
+
+				for _, tc := range testCases {
+					t.Run(tc.Name(), func(t *testing.T) {
+						RegisterTestingT(t)
+
+						if len(tc.Diff) == 0 {
+							Expect(DiffFunc(tc.Left, tc.Right, equalsFn)).To(BeNil())
+						} else {
+							Expect(DiffFunc(tc.Left, tc.Right, equalsFn)).To(Equal(tc.Diff))
+						}
+					})
+				}
+			})
+		}
+	})
+}
+
+func ExampleDiffFunc() {
+	n1 := []int{1, 2, 3, 4, 5}
+	n2 := []string{"2", "4", "6", "8"}
+
+	equalsFn := func(a int, b string) bool { return strconv.Itoa(a) == b }
+
+	fmt.Println(DiffFunc(n1, nil, equalsFn))
+	fmt.Println(DiffFunc(n1, n2, equalsFn))
+	fmt.Println(DiffFunc(nil, n2, equalsFn))
+	// Output:
+	// [1 2 3 4 5]
+	// [1 3 5]
+	// []
+}
+
+type binaryTestCase[T, S any] struct {
 	Left      []T
-	Right     []T
+	Right     []S
 	Diff      []T
 	Intersect []T
 }
 
-func (t binaryTestCase[T]) Name() string {
+func (t binaryTestCase[T, S]) Name() string {
 	aVal := "nil"
 	if t.Left != nil {
 		aVal = fmt.Sprintf("%v", t.Left)
@@ -730,52 +827,53 @@ func (t binaryTestCase[T]) Name() string {
 	return aVal + "-" + bVal
 }
 
-func getBinaryOperationCases[T any](
-	generate func(int) T,
-) map[string][]binaryTestCase[T] {
+func getBinaryOperationCases[T, S any](
+	leftGenerate func(int) T,
+	rightGenerate func(int) S,
+) map[string][]binaryTestCase[T, S] {
 	testCases := getIntBinaryOperationCases()
 
 	// Remap ints to T values
-	res := make(map[string][]binaryTestCase[T])
+	res := make(map[string][]binaryTestCase[T, S])
 	for name, cases := range testCases {
-		res[name] = make([]binaryTestCase[T], len(cases))
+		res[name] = make([]binaryTestCase[T, S], len(cases))
 		for i, c := range cases {
-			res[name][i] = binaryTestCase[T]{
-				Left:      Map(c.Left, generate),
-				Right:     Map(c.Right, generate),
-				Diff:      Map(c.Diff, generate),
-				Intersect: Map(c.Intersect, generate),
+			res[name][i] = binaryTestCase[T, S]{
+				Left:      Map(c.Left, leftGenerate),
+				Right:     Map(c.Right, rightGenerate),
+				Diff:      Map(c.Diff, leftGenerate),
+				Intersect: Map(c.Intersect, leftGenerate),
 			}
 		}
 	}
 	return res
 }
 
-func getIntBinaryOperationCases() map[string][]binaryTestCase[int] {
-	res := make(map[string][]binaryTestCase[int])
+func getIntBinaryOperationCases() map[string][]binaryTestCase[int, int] {
+	res := make(map[string][]binaryTestCase[int, int])
 
-	res["empty"] = []binaryTestCase[int]{
+	res["empty"] = []binaryTestCase[int, int]{
 		{nil, nil, nil, nil},
 		{nil, []int{}, nil, nil},
 		{[]int{}, nil, nil, nil},
 		{[]int{}, []int{}, nil, nil},
 	}
 
-	res["leftEmpty"] = []binaryTestCase[int]{
+	res["leftEmpty"] = []binaryTestCase[int, int]{
 		{nil, []int{1}, nil, nil},
 		{nil, []int{1, 2, 3}, nil, nil},
 		{[]int{}, []int{1}, nil, nil},
 		{[]int{}, []int{1, 2, 3}, nil, nil},
 	}
 
-	res["rightEmpty"] = []binaryTestCase[int]{
+	res["rightEmpty"] = []binaryTestCase[int, int]{
 		{[]int{1}, nil, []int{1}, nil},
 		{[]int{1, 2, 3}, nil, []int{1, 2, 3}, nil},
 		{[]int{1}, []int{}, []int{1}, nil},
 		{[]int{1, 2, 3}, []int{}, []int{1, 2, 3}, nil},
 	}
 
-	res["combos"] = []binaryTestCase[int]{
+	res["combos"] = []binaryTestCase[int, int]{
 		{[]int{1}, []int{1}, nil, []int{1}},
 		{[]int{1}, []int{2}, []int{1}, nil},
 		{[]int{1}, []int{1, 2, 3}, nil, []int{1}},
@@ -800,7 +898,7 @@ func getIntBinaryOperationCases() map[string][]binaryTestCase[int] {
 		{[]int{1, 2, 3}, []int{4, 5, 6}, []int{1, 2, 3}, nil},
 	}
 
-	res["dups"] = []binaryTestCase[int]{
+	res["dups"] = []binaryTestCase[int, int]{
 		{[]int{1, 2, 3}, []int{1, 1, 1}, []int{2, 3}, []int{1}},
 		{[]int{1, 2, 3}, []int{4, 4, 4}, []int{1, 2, 3}, nil},
 		{[]int{1, 2, 3}, []int{4, 3, 4, 3, 4}, []int{1, 2}, []int{3}},
@@ -812,3 +910,5 @@ func getIntBinaryOperationCases() map[string][]binaryTestCase[int] {
 
 	return res
 }
+
+func id[T any](v T) T { return v }

@@ -144,6 +144,30 @@ func FilterOut[T any](slice []T, predicateFn func(elem T) bool) []T {
 	return res
 }
 
+// Uniq returns a copy of the given slice containing all unique elements.
+// The type of the slice elements must be comparable.
+func Uniq[T comparable](slice []T) []T {
+	var res []T
+	for i := range slice {
+		if !Includes(res, slice[i]) {
+			res = append(res, slice[i])
+		}
+	}
+	return res
+}
+
+// Uniq returns a copy of the given slice containing all unique elements.
+// The type of the slice elements must be comparable.
+func UniqFunc[T any](slice []T, equalsFn func(n, m T) bool) []T {
+	var res []T
+	for i := range slice {
+		if !IncludesFunc(res, func(elem T) bool { return equalsFn(slice[i], elem) }) {
+			res = append(res, slice[i])
+		}
+	}
+	return res
+}
+
 // Overlap returns true if two slices have at least one common element.
 // The type of the slice elements must be comparable.
 func Overlap[T comparable](a, b []T) bool {

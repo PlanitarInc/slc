@@ -641,6 +641,98 @@ func ExampleFilterOut() {
 	// [1 2 3 4 5]
 }
 
+func TestUniq(t *testing.T) {
+	RegisterTestingT(t)
+
+	t.Run("int", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		Expect(Uniq[int](nil)).To(BeNil())
+		Expect(Uniq([]int{})).To(BeNil())
+		Expect(Uniq([]int{1})).To(Equal([]int{1}))
+		Expect(Uniq([]int{1, 2, 3})).To(Equal([]int{1, 2, 3}))
+
+		Expect(Uniq([]int{1, 1, 1})).To(Equal([]int{1}))
+		Expect(Uniq([]int{1, 2, 1, 1})).To(Equal([]int{1, 2}))
+		Expect(Uniq([]int{1, 2, 2, 1})).To(Equal([]int{1, 2}))
+		Expect(Uniq([]int{1, 3, 2, 2})).To(Equal([]int{1, 3, 2}))
+	})
+
+	t.Run("string", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		Expect(Uniq[string](nil)).To(BeNil())
+		Expect(Uniq([]string{})).To(BeNil())
+		Expect(Uniq([]string{"a"})).To(Equal([]string{"a"}))
+		Expect(Uniq([]string{"a", "b", "c"})).To(Equal([]string{"a", "b", "c"}))
+
+		Expect(Uniq([]string{"a", "a", "a"})).To(Equal([]string{"a"}))
+		Expect(Uniq([]string{"a", "b", "a", "a"})).To(Equal([]string{"a", "b"}))
+		Expect(Uniq([]string{"a", "b", "b", "a"})).To(Equal([]string{"a", "b"}))
+		Expect(Uniq([]string{"a", "c", "b", "b"})).To(Equal([]string{"a", "c", "b"}))
+	})
+}
+
+func ExampleUniq() {
+	fmt.Println(Uniq([]int{1, 1, 1}))
+	fmt.Println(Uniq([]string{"a", "b", "b", "a"}))
+	fmt.Println(Uniq[int](nil))
+	// Output:
+	// [1]
+	// [a b]
+	// []
+}
+
+func TestUniqFunc(t *testing.T) {
+	RegisterTestingT(t)
+
+	t.Run("int", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		equalsInt := func(a, b int) bool { return a == b }
+
+		Expect(UniqFunc(nil, equalsInt)).To(BeNil())
+		Expect(UniqFunc([]int{}, equalsInt)).To(BeNil())
+		Expect(UniqFunc([]int{1}, equalsInt)).To(Equal([]int{1}))
+		Expect(UniqFunc([]int{1, 2, 3}, equalsInt)).To(Equal([]int{1, 2, 3}))
+
+		Expect(UniqFunc([]int{1, 1, 1}, equalsInt)).To(Equal([]int{1}))
+		Expect(UniqFunc([]int{1, 2, 1, 1}, equalsInt)).To(Equal([]int{1, 2}))
+		Expect(UniqFunc([]int{1, 2, 2, 1}, equalsInt)).To(Equal([]int{1, 2}))
+		Expect(UniqFunc([]int{1, 3, 2, 2}, equalsInt)).To(Equal([]int{1, 3, 2}))
+	})
+
+	t.Run("string", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		equalsStr := func(a, b string) bool { return a == b }
+
+		Expect(UniqFunc(nil, equalsStr)).To(BeNil())
+		Expect(UniqFunc([]string{}, equalsStr)).To(BeNil())
+		Expect(UniqFunc([]string{"a"}, equalsStr)).To(Equal([]string{"a"}))
+		Expect(UniqFunc([]string{"a", "b", "c"}, equalsStr)).To(Equal([]string{"a", "b", "c"}))
+
+		Expect(UniqFunc([]string{"a", "a", "a"}, equalsStr)).To(Equal([]string{"a"}))
+		Expect(UniqFunc([]string{"a", "b", "a", "a"}, equalsStr)).To(Equal([]string{"a", "b"}))
+		Expect(UniqFunc([]string{"a", "b", "b", "a"}, equalsStr)).To(Equal([]string{"a", "b"}))
+		Expect(UniqFunc([]string{"a", "c", "b", "b"}, equalsStr)).To(Equal([]string{"a", "c", "b"}))
+	})
+}
+
+func ExampleUniqFunc() {
+	fmt.Println(UniqFunc([]int{1, 2, 3}, func(n, m int) bool { return n == m }))
+	fmt.Println(UniqFunc([]int{1, 2, 1, 1, 3, 1}, func(n, m int) bool { return n == m }))
+
+	type C struct {
+		N int
+	}
+	fmt.Println(UniqFunc([]C{{1}, {2}, {3}, {4}, {5}}, func(a, b C) bool { return a.N == b.N }))
+	// Output:
+	// [1 2 3]
+	// [1 2 3]
+	// [{1} {2} {3} {4} {5}]
+}
+
 func TestOverlap(t *testing.T) {
 	RegisterTestingT(t)
 

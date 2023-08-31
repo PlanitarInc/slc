@@ -6,7 +6,7 @@ import (
 	"github.com/PlanitarInc/slc"
 )
 
-func Example_Combo() {
+func Example() {
 	nums := []int{1, 2, 3, 4, 5}
 
 	fmt.Println(slc.Includes(nums, 4)) // true

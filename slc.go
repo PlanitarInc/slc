@@ -170,6 +170,40 @@ func OverlapFunc[T, S any](a []T, b []S, equalsFn func(e1 T, e2 S) bool) bool {
 	return false
 }
 
+// Intersect returns the intersection of two slices.
+// The type of the slice elements must be comparable.
+func Intersect[T comparable](a, b []T) []T {
+	var res []T
+	for i := range a {
+		if !Includes(res, a[i]) && Includes(b, a[i]) {
+			res = append(res, a[i])
+		}
+	}
+	return res
+}
+
+// Intersect returns the intersection of two slices.
+// The elements are compared using the given function, equalsFn.
+func IntersectFunc[T comparable, S any](a []T, b []S, equalsFn func(e1 T, e2 S) bool) []T {
+	var res []T
+
+OuterLoop:
+	for i := range a {
+		if Includes(res, a[i]) {
+			continue
+		}
+
+		for j := range b {
+			if equalsFn(a[i], b[j]) {
+				res = append(res, a[i])
+				continue OuterLoop
+			}
+		}
+	}
+
+	return res
+}
+
 // Diff returns the difference between the given slices: a - b.
 // The type of the slice elements must be comparable.
 func Diff[T comparable](a, b []T) []T {

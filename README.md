@@ -54,3 +54,12 @@ func main() {
 	})) // [{a 9}, {c 7}]
 }
 ```
+
+## Development
+
+Feel free to modify the library and submit your changes. The main requirements
+are some reasonable asks for a library:
+- 100% test coverage
+- 100% documentation for public API (types, functions, constants)
+- readable code
+

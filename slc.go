@@ -96,6 +96,26 @@ func FindPtr[T any](slice []T, predicateFn func(elem T) bool) *T {
 	return nil
 }
 
+// Map returns a copy of the given slice containing all elements transformed by
+// the given function.
+func Map[T, S any](slice []T, transformFn func(elem T) S) []S {
+	var res []S
+	for i := range slice {
+		res = append(res, transformFn(slice[i]))
+	}
+	return res
+}
+
+// Reduce returns the result of applying the given function to each element of
+// the given slice. The function is applied left-to-right.
+func Reduce[T, S any](slice []T, accumulateFn func(acc S, elem T) S) S {
+	var res S
+	for i := range slice {
+		res = accumulateFn(res, slice[i])
+	}
+	return res
+}
+
 // Filter returns a copy of the given slice containing all elements satisfying
 // the given predicate.
 //

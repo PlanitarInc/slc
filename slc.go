@@ -12,6 +12,19 @@ func Includes[T comparable](slice []T, elem T) bool {
 	return false
 }
 
+// Index returns the index of the given element in the slice. The function
+// returns -1 if the element is not found.
+// The type of the slice elements must be comparable.
+func Index[T comparable](slice []T, elem T) int {
+	for i := range slice {
+		if slice[i] == elem {
+			return i
+		}
+	}
+
+	return -1
+}
+
 // Every detects if all elements satisfy the given predicate.
 func Every[T any](slice []T, predicateFn func(elem T) bool) bool {
 	for i := range slice {

@@ -43,6 +43,42 @@ func ExampleIncludes() {
 	// false
 }
 
+func TestIndex(t *testing.T) {
+	RegisterTestingT(t)
+
+	Expect(Index(nil, 1)).To(Equal(-1))
+	Expect(Index(nil, 0)).To(Equal(-1))
+	Expect(Index([]int{}, 9)).To(Equal(-1))
+	Expect(Index([]int{1, 2, 3, 4, 5}, 9)).To(Equal(-1))
+	Expect(Index([]int{1, 2, 3, 4, 5}, 1)).To(Equal(0))
+	Expect(Index([]int{1, 2, 3, 4, 5}, 5)).To(Equal(4))
+	Expect(Index([]int{1, 2, 3, 4, 5}, 4)).To(Equal(3))
+
+	Expect(Index(nil, "")).To(Equal(-1))
+	Expect(Index(nil, "zz")).To(Equal(-1))
+	Expect(Index([]string{}, "")).To(Equal(-1))
+	Expect(Index([]string{"a", "b", "c"}, "zz")).To(Equal(-1))
+	Expect(Index([]string{"a", "b", "c"}, "a")).To(Equal(0))
+	Expect(Index([]string{"a", "b", "c"}, "b")).To(Equal(1))
+	Expect(Index([]string{"a", "b", "c"}, "c")).To(Equal(2))
+}
+
+func ExampleIndex() {
+	n := []int{1, 2, 3, 4, 5}
+
+	fmt.Println(Index(n, 0))
+	fmt.Println(Index(n, 1))
+	fmt.Println(Index(n, 4))
+	fmt.Println(Index(n, 5))
+	fmt.Println(Index(n, 6))
+	// Output:
+	// -1
+	// 0
+	// 3
+	// 4
+	// -1
+}
+
 func TestEvery(t *testing.T) {
 	RegisterTestingT(t)
 

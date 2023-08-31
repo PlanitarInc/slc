@@ -644,78 +644,55 @@ func ExampleFilterOut() {
 func TestDiff(t *testing.T) {
 	RegisterTestingT(t)
 
-	t.Run("empty", func(t *testing.T) {
+	t.Run("int", func(t *testing.T) {
 		RegisterTestingT(t)
 
-		Expect(Diff[int](nil, nil)).To(BeNil())
-		Expect(Diff([]int{}, nil)).To(BeNil())
-		Expect(Diff(nil, []int{})).To(BeNil())
-		Expect(Diff([]int{}, []int{})).To(BeNil())
+		groupedTestCases := getBinaryOperationCases(func(n int) int { return n })
+
+		for groupName, testCases := range groupedTestCases {
+			t.Run(groupName, func(t *testing.T) {
+				RegisterTestingT(t)
+
+				for _, tc := range testCases {
+					t.Run(tc.Name(), func(t *testing.T) {
+						RegisterTestingT(t)
+
+						if len(tc.Diff) == 0 {
+							Expect(Diff(tc.Left, tc.Right)).To(BeNil())
+						} else {
+							Expect(Diff(tc.Left, tc.Right)).To(Equal(tc.Diff))
+						}
+					})
+				}
+			})
+		}
 	})
 
-	t.Run("leftEmpty", func(t *testing.T) {
+	t.Run("string", func(t *testing.T) {
 		RegisterTestingT(t)
 
-		Expect(Diff(nil, []int{1})).To(BeNil())
-		Expect(Diff(nil, []int{1, 2, 3})).To(BeNil())
-		Expect(Diff([]int{}, []int{1})).To(BeNil())
-		Expect(Diff([]int{}, []int{1, 2, 3})).To(BeNil())
-	})
+		genFn := func(n int) string {
+			return string([]byte{byte('a') + byte(n)})
+		}
+		groupedTestCases := getBinaryOperationCases(genFn)
 
-	t.Run("rightEmpty", func(t *testing.T) {
-		RegisterTestingT(t)
+		for groupName, testCases := range groupedTestCases {
+			t.Run(groupName, func(t *testing.T) {
+				RegisterTestingT(t)
 
-		Expect(Diff([]int{1}, nil)).To(Equal([]int{1}))
-		Expect(Diff([]int{1, 2, 3}, nil)).To(Equal([]int{1, 2, 3}))
-		Expect(Diff([]int{1}, []int{})).To(Equal([]int{1}))
-		Expect(Diff([]int{1, 2, 3}, []int{})).To(Equal([]int{1, 2, 3}))
-	})
+				for _, tc := range testCases {
+					t.Run(tc.Name(), func(t *testing.T) {
+						RegisterTestingT(t)
 
-	t.Run("combos", func(t *testing.T) {
-		RegisterTestingT(t)
-
-		Expect(Diff([]int{1}, []int{1})).To(BeNil())
-		Expect(Diff([]int{1}, []int{2})).To(Equal([]int{1}))
-		Expect(Diff([]int{1}, []int{1, 2, 3})).To(BeNil())
-		Expect(Diff([]int{1}, []int{2, 3})).To(Equal([]int{1}))
-
-		Expect(Diff([]int{1, 2, 3}, []int{1})).To(Equal([]int{2, 3}))
-		Expect(Diff([]int{1, 2, 3}, []int{2})).To(Equal([]int{1, 3}))
-		Expect(Diff([]int{1, 2, 3}, []int{3})).To(Equal([]int{1, 2}))
-		Expect(Diff([]int{1, 2, 3}, []int{4})).To(Equal([]int{1, 2, 3}))
-
-		Expect(Diff([]int{1, 2, 3}, []int{1, 2})).To(Equal([]int{3}))
-		Expect(Diff([]int{1, 2, 3}, []int{2, 1})).To(Equal([]int{3}))
-		Expect(Diff([]int{1, 2, 3}, []int{1, 3})).To(Equal([]int{2}))
-		Expect(Diff([]int{1, 2, 3}, []int{3, 1})).To(Equal([]int{2}))
-		Expect(Diff([]int{1, 2, 3}, []int{2, 3})).To(Equal([]int{1}))
-		Expect(Diff([]int{1, 2, 3}, []int{3, 2})).To(Equal([]int{1}))
-		Expect(Diff([]int{1, 2, 3}, []int{1, 4})).To(Equal([]int{2, 3}))
-		Expect(Diff([]int{1, 2, 3}, []int{4, 1})).To(Equal([]int{2, 3}))
-
-		Expect(Diff([]int{1, 2, 3}, []int{1, 2, 3})).To(BeNil())
-		Expect(Diff([]int{1, 2, 3}, []int{4, 1, 3})).To(Equal([]int{2}))
-		Expect(Diff([]int{1, 2, 3}, []int{4, 5, 6})).To(Equal([]int{1, 2, 3}))
-	})
-
-	t.Run("dups", func(t *testing.T) {
-		RegisterTestingT(t)
-
-		Expect(Diff([]int{1, 2, 3}, []int{1, 1, 1})).To(Equal([]int{2, 3}))
-		Expect(Diff([]int{1, 2, 3}, []int{4, 4, 4})).To(Equal([]int{1, 2, 3}))
-		Expect(Diff([]int{1, 2, 3}, []int{4, 3, 4, 3, 4})).To(Equal([]int{1, 2}))
-
-		Expect(Diff([]int{1, 2, 1, 3, 1}, []int{1})).To(Equal([]int{2, 3}))
-		Expect(Diff([]int{1, 2, 2, 3, 1}, []int{2})).To(Equal([]int{1, 3, 1}))
-		Expect(Diff([]int{1, 3, 2, 3, 3}, []int{3})).To(Equal([]int{1, 2}))
-	})
-
-	t.Run("strings", func(t *testing.T) {
-		RegisterTestingT(t)
-
-		Expect(Diff([]string{"a", "b", "c"}, []string{"a"})).To(Equal([]string{"b", "c"}))
-		Expect(Diff([]string{"a", "b", "c"}, []string{"b", "d"})).To(Equal([]string{"a", "c"}))
-		Expect(Diff([]string{"a", "b", "c"}, []string{"d", "b", "d"})).To(Equal([]string{"a", "c"}))
+						if len(tc.Diff) == 0 {
+							Expect(Diff(tc.Left, tc.Right)).To(BeNil())
+						} else {
+							Expect(Diff(tc.Left, tc.Right)).To(Equal(tc.Diff))
+						}
+					})
+				}
+			})
+		}
 	})
 }
 
@@ -730,4 +707,108 @@ func ExampleDiff() {
 	// [1 2 3 4 5]
 	// [1 3 5]
 	// []
+}
+
+type binaryTestCase[T any] struct {
+	Left      []T
+	Right     []T
+	Diff      []T
+	Intersect []T
+}
+
+func (t binaryTestCase[T]) Name() string {
+	aVal := "nil"
+	if t.Left != nil {
+		aVal = fmt.Sprintf("%v", t.Left)
+	}
+
+	bVal := "nil"
+	if t.Right != nil {
+		bVal = fmt.Sprintf("%v", t.Right)
+	}
+
+	return aVal + "-" + bVal
+}
+
+func getBinaryOperationCases[T any](
+	generate func(int) T,
+) map[string][]binaryTestCase[T] {
+	testCases := getIntBinaryOperationCases()
+
+	// Remap ints to T values
+	res := make(map[string][]binaryTestCase[T])
+	for name, cases := range testCases {
+		res[name] = make([]binaryTestCase[T], len(cases))
+		for i, c := range cases {
+			res[name][i] = binaryTestCase[T]{
+				Left:      Map(c.Left, generate),
+				Right:     Map(c.Right, generate),
+				Diff:      Map(c.Diff, generate),
+				Intersect: Map(c.Intersect, generate),
+			}
+		}
+	}
+	return res
+}
+
+func getIntBinaryOperationCases() map[string][]binaryTestCase[int] {
+	res := make(map[string][]binaryTestCase[int])
+
+	res["empty"] = []binaryTestCase[int]{
+		{nil, nil, nil, nil},
+		{nil, []int{}, nil, nil},
+		{[]int{}, nil, nil, nil},
+		{[]int{}, []int{}, nil, nil},
+	}
+
+	res["leftEmpty"] = []binaryTestCase[int]{
+		{nil, []int{1}, nil, nil},
+		{nil, []int{1, 2, 3}, nil, nil},
+		{[]int{}, []int{1}, nil, nil},
+		{[]int{}, []int{1, 2, 3}, nil, nil},
+	}
+
+	res["rightEmpty"] = []binaryTestCase[int]{
+		{[]int{1}, nil, []int{1}, nil},
+		{[]int{1, 2, 3}, nil, []int{1, 2, 3}, nil},
+		{[]int{1}, []int{}, []int{1}, nil},
+		{[]int{1, 2, 3}, []int{}, []int{1, 2, 3}, nil},
+	}
+
+	res["combos"] = []binaryTestCase[int]{
+		{[]int{1}, []int{1}, nil, []int{1}},
+		{[]int{1}, []int{2}, []int{1}, nil},
+		{[]int{1}, []int{1, 2, 3}, nil, []int{1}},
+		{[]int{1}, []int{2, 3}, []int{1}, nil},
+
+		{[]int{1, 2, 3}, []int{1}, []int{2, 3}, []int{1}},
+		{[]int{1, 2, 3}, []int{2}, []int{1, 3}, []int{2}},
+		{[]int{1, 2, 3}, []int{3}, []int{1, 2}, []int{3}},
+		{[]int{1, 2, 3}, []int{4}, []int{1, 2, 3}, nil},
+
+		{[]int{1, 2, 3}, []int{1, 2}, []int{3}, []int{1, 2}},
+		{[]int{1, 2, 3}, []int{2, 1}, []int{3}, []int{1, 2}},
+		{[]int{1, 2, 3}, []int{1, 3}, []int{2}, []int{1, 3}},
+		{[]int{1, 2, 3}, []int{3, 1}, []int{2}, []int{1, 3}},
+		{[]int{1, 2, 3}, []int{2, 3}, []int{1}, []int{2, 3}},
+		{[]int{1, 2, 3}, []int{3, 2}, []int{1}, []int{2, 3}},
+		{[]int{1, 2, 3}, []int{1, 4}, []int{2, 3}, []int{1}},
+		{[]int{1, 2, 3}, []int{4, 1}, []int{2, 3}, []int{1}},
+
+		{[]int{1, 2, 3}, []int{1, 2, 3}, nil, []int{1, 2, 3}},
+		{[]int{1, 2, 3}, []int{4, 1, 3}, []int{2}, []int{1, 3}},
+		{[]int{1, 2, 3}, []int{4, 5, 6}, []int{1, 2, 3}, nil},
+	}
+
+	res["dups"] = []binaryTestCase[int]{
+		{[]int{1, 2, 3}, []int{1, 1, 1}, []int{2, 3}, []int{1}},
+		{[]int{1, 2, 3}, []int{4, 4, 4}, []int{1, 2, 3}, nil},
+		{[]int{1, 2, 3}, []int{4, 3, 4, 3, 4}, []int{1, 2}, []int{3}},
+
+		{[]int{1, 2, 1, 3, 1}, []int{1}, []int{2, 3}, []int{1}},
+		{[]int{1, 2, 2, 3, 1}, []int{2}, []int{1, 3, 1}, []int{2}},
+		{[]int{1, 3, 2, 3, 3}, []int{3}, []int{1, 2}, []int{3}},
+	}
+
+	return res
 }

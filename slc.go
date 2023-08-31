@@ -1,10 +1,21 @@
 package slc
 
-// Includes detects if the given slice includes the given element. The type of
-// the slice elements must be comparable.
+// Includes detects if the given slice includes the given element.
+// The type of the slice elements must be comparable.
 func Includes[T comparable](slice []T, elem T) bool {
 	for i := range slice {
 		if slice[i] == elem {
+			return true
+		}
+	}
+
+	return false
+}
+
+// IncludesFunc detects if the given slice includes an element satisfying the predicate.
+func IncludesFunc[T any](slice []T, predicateFn func(elem T) bool) bool {
+	for i := range slice {
+		if predicateFn(slice[i]) {
 			return true
 		}
 	}
@@ -18,6 +29,18 @@ func Includes[T comparable](slice []T, elem T) bool {
 func Index[T comparable](slice []T, elem T) int {
 	for i := range slice {
 		if slice[i] == elem {
+			return i
+		}
+	}
+
+	return -1
+}
+
+// IndexFunc returns the index of an element satisfying the predicate. The function
+// returns -1 if such element is not found.
+func IndexFunc[T any](slice []T, predicateFn func(elem T) bool) int {
+	for i := range slice {
+		if predicateFn(slice[i]) {
 			return i
 		}
 	}

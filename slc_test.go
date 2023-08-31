@@ -7,24 +7,48 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestIncludes(t *testing.T) {
+func Test_IncludesFunctions(t *testing.T) {
 	RegisterTestingT(t)
 
-	Expect(Includes(nil, 1)).To(BeFalse())
-	Expect(Includes(nil, 0)).To(BeFalse())
-	Expect(Includes([]int{}, 9)).To(BeFalse())
-	Expect(Includes([]int{1, 2, 3, 4, 5}, 9)).To(BeFalse())
-	Expect(Includes([]int{1, 2, 3, 4, 5}, 1)).To(BeTrue())
-	Expect(Includes([]int{1, 2, 3, 4, 5}, 5)).To(BeTrue())
-	Expect(Includes([]int{1, 2, 3, 4, 5}, 4)).To(BeTrue())
+	t.Run("int", func(t *testing.T) {
+		RegisterTestingT(t)
 
-	Expect(Includes(nil, "")).To(BeFalse())
-	Expect(Includes(nil, "zz")).To(BeFalse())
-	Expect(Includes([]string{}, "")).To(BeFalse())
-	Expect(Includes([]string{"a", "b", "c"}, "zz")).To(BeFalse())
-	Expect(Includes([]string{"a", "b", "c"}, "a")).To(BeTrue())
-	Expect(Includes([]string{"a", "b", "c"}, "b")).To(BeTrue())
-	Expect(Includes([]string{"a", "b", "c"}, "c")).To(BeTrue())
+		Expect(Includes(nil, 1)).To(BeFalse())
+		Expect(Includes(nil, 0)).To(BeFalse())
+		Expect(Includes([]int{}, 9)).To(BeFalse())
+		Expect(Includes([]int{1, 2, 3, 4, 5}, 9)).To(BeFalse())
+		Expect(Includes([]int{1, 2, 3, 4, 5}, 1)).To(BeTrue())
+		Expect(Includes([]int{1, 2, 3, 4, 5}, 5)).To(BeTrue())
+		Expect(Includes([]int{1, 2, 3, 4, 5}, 4)).To(BeTrue())
+
+		isFour := func(n int) bool { return n == 4 }
+		isTen := func(n int) bool { return n == 10 }
+		Expect(IncludesFunc(nil, isFour)).To(BeFalse())
+		Expect(IncludesFunc(nil, isTen)).To(BeFalse())
+		Expect(IncludesFunc([]int{}, isFour)).To(BeFalse())
+		Expect(IncludesFunc([]int{}, isTen)).To(BeFalse())
+		Expect(IncludesFunc([]int{1, 2, 3, 4, 5}, isFour)).To(BeTrue())
+		Expect(IncludesFunc([]int{1, 2, 3, 4, 5}, isTen)).To(BeFalse())
+	})
+
+	t.Run("string", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		Expect(Includes(nil, "")).To(BeFalse())
+		Expect(Includes(nil, "zz")).To(BeFalse())
+		Expect(Includes([]string{}, "")).To(BeFalse())
+		Expect(Includes([]string{"a", "b", "c"}, "zz")).To(BeFalse())
+		Expect(Includes([]string{"a", "b", "c"}, "a")).To(BeTrue())
+		Expect(Includes([]string{"a", "b", "c"}, "b")).To(BeTrue())
+		Expect(Includes([]string{"a", "b", "c"}, "c")).To(BeTrue())
+
+		isB := func(s string) bool { return s == "b" }
+		Expect(IncludesFunc(nil, isB)).To(BeFalse())
+		Expect(IncludesFunc([]string{}, isB)).To(BeFalse())
+		Expect(IncludesFunc([]string{"a"}, isB)).To(BeFalse())
+		Expect(IncludesFunc([]string{"a", "b"}, isB)).To(BeTrue())
+		Expect(IncludesFunc([]string{"a", "b", "c"}, isB)).To(BeTrue())
+	})
 }
 
 func ExampleIncludes() {
@@ -43,24 +67,66 @@ func ExampleIncludes() {
 	// false
 }
 
-func TestIndex(t *testing.T) {
+func ExampleIncludesFunc() {
+	type C struct {
+		N int
+	}
+
+	n := []C{{1}, {2}, {3}, {4}, {5}}
+
+	fmt.Println(IncludesFunc(n, func(c C) bool { return c.N == 0 }))
+	fmt.Println(IncludesFunc(n, func(c C) bool { return c.N == 4 }))
+	fmt.Println(IncludesFunc(n, func(c C) bool { return c.N > 3 }))
+	fmt.Println(IncludesFunc(n, func(c C) bool { return c.N > 5 }))
+	// Output:
+	// false
+	// true
+	// true
+	// false
+}
+
+func Test_IndexFunctions(t *testing.T) {
 	RegisterTestingT(t)
 
-	Expect(Index(nil, 1)).To(Equal(-1))
-	Expect(Index(nil, 0)).To(Equal(-1))
-	Expect(Index([]int{}, 9)).To(Equal(-1))
-	Expect(Index([]int{1, 2, 3, 4, 5}, 9)).To(Equal(-1))
-	Expect(Index([]int{1, 2, 3, 4, 5}, 1)).To(Equal(0))
-	Expect(Index([]int{1, 2, 3, 4, 5}, 5)).To(Equal(4))
-	Expect(Index([]int{1, 2, 3, 4, 5}, 4)).To(Equal(3))
+	t.Run("int", func(t *testing.T) {
+		RegisterTestingT(t)
 
-	Expect(Index(nil, "")).To(Equal(-1))
-	Expect(Index(nil, "zz")).To(Equal(-1))
-	Expect(Index([]string{}, "")).To(Equal(-1))
-	Expect(Index([]string{"a", "b", "c"}, "zz")).To(Equal(-1))
-	Expect(Index([]string{"a", "b", "c"}, "a")).To(Equal(0))
-	Expect(Index([]string{"a", "b", "c"}, "b")).To(Equal(1))
-	Expect(Index([]string{"a", "b", "c"}, "c")).To(Equal(2))
+		Expect(Index(nil, 1)).To(Equal(-1))
+		Expect(Index(nil, 0)).To(Equal(-1))
+		Expect(Index([]int{}, 9)).To(Equal(-1))
+		Expect(Index([]int{1, 2, 3, 4, 5}, 9)).To(Equal(-1))
+		Expect(Index([]int{1, 2, 3, 4, 5}, 1)).To(Equal(0))
+		Expect(Index([]int{1, 2, 3, 4, 5}, 5)).To(Equal(4))
+		Expect(Index([]int{1, 2, 3, 4, 5}, 4)).To(Equal(3))
+
+		isFour := func(n int) bool { return n == 4 }
+		isTen := func(n int) bool { return n == 10 }
+		Expect(IndexFunc(nil, isFour)).To(Equal(-1))
+		Expect(IndexFunc(nil, isTen)).To(Equal(-1))
+		Expect(IndexFunc([]int{}, isFour)).To(Equal(-1))
+		Expect(IndexFunc([]int{}, isTen)).To(Equal(-1))
+		Expect(IndexFunc([]int{1, 2, 3, 4, 5}, isFour)).To(Equal(3))
+		Expect(IndexFunc([]int{1, 2, 3, 4, 5}, isTen)).To(Equal(-1))
+	})
+
+	t.Run("string", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		Expect(Index(nil, "")).To(Equal(-1))
+		Expect(Index(nil, "zz")).To(Equal(-1))
+		Expect(Index([]string{}, "")).To(Equal(-1))
+		Expect(Index([]string{"a", "b", "c"}, "zz")).To(Equal(-1))
+		Expect(Index([]string{"a", "b", "c"}, "a")).To(Equal(0))
+		Expect(Index([]string{"a", "b", "c"}, "b")).To(Equal(1))
+		Expect(Index([]string{"a", "b", "c"}, "c")).To(Equal(2))
+
+		isB := func(s string) bool { return s == "b" }
+		Expect(IndexFunc(nil, isB)).To(Equal(-1))
+		Expect(IndexFunc([]string{}, isB)).To(Equal(-1))
+		Expect(IndexFunc([]string{"a"}, isB)).To(Equal(-1))
+		Expect(IndexFunc([]string{"a", "b"}, isB)).To(Equal(1))
+		Expect(IndexFunc([]string{"a", "b", "c"}, isB)).To(Equal(1))
+	})
 }
 
 func ExampleIndex() {
@@ -76,6 +142,24 @@ func ExampleIndex() {
 	// 0
 	// 3
 	// 4
+	// -1
+}
+
+func ExampleIndexFunc() {
+	type C struct {
+		N int
+	}
+
+	n := []C{{1}, {2}, {3}, {4}, {5}}
+
+	fmt.Println(IndexFunc(n, func(c C) bool { return c.N == 0 }))
+	fmt.Println(IndexFunc(n, func(c C) bool { return c.N == 4 }))
+	fmt.Println(IndexFunc(n, func(c C) bool { return c.N > 2 }))
+	fmt.Println(IndexFunc(n, func(c C) bool { return c.N > 5 }))
+	// Output:
+	// -1
+	// 3
+	// 2
 	// -1
 }
 

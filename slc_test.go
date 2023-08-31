@@ -2,6 +2,8 @@ package slc
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 	"testing"
 
 	. "github.com/onsi/gomega"
@@ -416,6 +418,122 @@ func ExampleFindPtr() {
 	// true
 	// true
 	// true
+}
+
+func TestMap(t *testing.T) {
+	RegisterTestingT(t)
+
+	t.Run("int", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		Expect(Map(nil, strconv.Itoa)).To(BeNil())
+		Expect(Map([]int{}, strconv.Itoa)).To(BeNil())
+		Expect(Map([]int{1}, strconv.Itoa)).To(Equal([]string{"1"}))
+		Expect(Map([]int{1, 2}, strconv.Itoa)).To(Equal([]string{"1", "2"}))
+		Expect(Map([]int{1, 2, 3, 4, 5}, strconv.Itoa)).To(Equal([]string{"1", "2", "3", "4", "5"}))
+	})
+
+	t.Run("string", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		isAB := func(s string) bool { return s == "a" || s == "b" }
+
+		Expect(Map(nil, isAB)).To(BeNil())
+		Expect(Map([]string{}, isAB)).To(BeNil())
+		Expect(Map([]string{"a", "b", "c"}, isAB)).To(Equal([]bool{true, true, false}))
+	})
+
+	t.Run("nonComprableType", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		type tt struct {
+			S string
+			V bool
+		}
+
+		mapFn := func(v tt) string { return "_" + v.S + "_" }
+
+		Expect(Map(nil, mapFn)).To(BeNil())
+		Expect(Map([]tt{}, mapFn)).To(BeNil())
+
+		Expect(Map([]tt{
+			{"one", true},
+			{"two", true},
+			{"three", false},
+			{"four", false},
+			{"five", true},
+		}, mapFn)).To(Equal([]string{
+			"_one_",
+			"_two_",
+			"_three_",
+			"_four_",
+			"_five_",
+		}))
+	})
+}
+
+func ExampleMap() {
+	n := []int{1, 2, 3, 4, 5}
+
+	fmt.Println(strings.Join(Map(n, strconv.Itoa), ","))
+	// Output:
+	// 1,2,3,4,5
+}
+
+func TestReduce(t *testing.T) {
+	RegisterTestingT(t)
+
+	t.Run("int", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		sum := func(acc, n int) int { return acc + n }
+
+		Expect(Reduce(nil, sum)).To(Equal(0))
+		Expect(Reduce([]int{}, sum)).To(Equal(0))
+		Expect(Reduce([]int{1}, sum)).To(Equal(1))
+		Expect(Reduce([]int{1, 2}, sum)).To(Equal(3))
+		Expect(Reduce([]int{1, 2, 3, 4, 5}, sum)).To(Equal(15))
+	})
+
+	t.Run("string", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		count := func(acc int, s string) int { return acc + 1 }
+
+		Expect(Reduce(nil, count)).To(Equal(0))
+		Expect(Reduce([]string{}, count)).To(Equal(0))
+		Expect(Reduce([]string{"a", "b", "c"}, count)).To(Equal(3))
+	})
+
+	t.Run("nonComprableType", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		type tt struct {
+			S string
+			V bool
+		}
+
+		concat := func(acc string, v tt) string { return acc + "," + v.S }
+
+		Expect(Reduce(nil, concat)).To(Equal(""))
+		Expect(Reduce([]tt{}, concat)).To(Equal(""))
+
+		Expect(Reduce([]tt{
+			{"one", true},
+			{"two", true},
+			{"three", false},
+			{"four", false},
+			{"five", true},
+		}, concat)).To(Equal(",one,two,three,four,five"))
+	})
+}
+
+func ExampleReduce() {
+	n := []int{1, 2, 3, 4, 5}
+
+	fmt.Println(Reduce(n, func(acc, n int) int { return acc + n }))
+	// Output:
+	// 15
 }
 
 func Test_FilterFunctions(t *testing.T) {

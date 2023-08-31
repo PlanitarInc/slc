@@ -26,7 +26,7 @@ jobs:
       run: go build -v ./...
 
     - name: Test
-      run: go test -v ./...
+      run: go test -v -race -covermode atomic -coverprofile=covprofile ./...
 
     - name: Refresh version on go.dev
       if: github.event_name == 'push' && github.ref_type == 'tag'
@@ -34,3 +34,10 @@ jobs:
         GOPROXY: proxy.golang.org 
         PACKAGE_VERSION: ${{ github.ref_name }}
       run: go list -m github.com/PlanitarInc/slc@${PACKAGE_VERSION}
+
+    - name: Send coverage to Coveralls.io
+      env:
+        COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        go install github.com/mattn/goveralls@latest
+        goveralls -coverprofile=covprofile -service=github

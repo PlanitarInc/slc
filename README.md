@@ -1,4 +1,4 @@
-# slc [![CI](https://github.com/PlanitarInc/slc/actions/workflows/go.yml/badge.svg)](https://github.com/PlanitarInc/slc/actions/workflows/go.yml) [![GoDoc](https://godoc.org/github.com/PlanitarInc/slc?status.svg)](https://godoc.org/github.com/PlanitarInc/slc)
+# slc [![GoDoc](https://godoc.org/github.com/PlanitarInc/slc?status.svg)](https://godoc.org/github.com/PlanitarInc/slc) [![CI](https://github.com/PlanitarInc/slc/actions/workflows/go.yml/badge.svg)](https://github.com/PlanitarInc/slc/actions/workflows/go.yml) [![Coverage Status](https://coveralls.io/repos/github/PlanitarInc/slc/badge.svg)](https://coveralls.io/github/PlanitarInc/slc)
 
 A generics-based toolset for working with slices.
 

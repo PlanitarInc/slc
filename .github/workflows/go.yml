@@ -6,6 +6,7 @@ name: CI
 on:
   push:
     branches: [ "master" ]
+    tags: [ "v*.*.*" ]
   pull_request:
     branches: [ "master" ]
 
@@ -26,3 +27,7 @@ jobs:
 
     - name: Test
       run: go test -v ./...
+
+    - name: Refresh version on go.dev
+      if: ${{ github.event_name == 'pull_request' && github.ref_type == 'tag' }}
+      run: GOPROXY=proxy.golang.org go list -m github.com/PlanitarInc/slc@${GITHUB_REF_NAME}

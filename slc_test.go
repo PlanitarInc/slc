@@ -1,6 +1,7 @@
 package slc
 
 import (
+	"fmt"
 	"testing"
 
 	. "github.com/onsi/gomega"
@@ -24,6 +25,22 @@ func TestIncludes(t *testing.T) {
 	Expect(Includes([]string{"a", "b", "c"}, "a")).To(BeTrue())
 	Expect(Includes([]string{"a", "b", "c"}, "b")).To(BeTrue())
 	Expect(Includes([]string{"a", "b", "c"}, "c")).To(BeTrue())
+}
+
+func ExampleIncludes() {
+	n := []int{1, 2, 3, 4, 5}
+
+	fmt.Println(Includes(n, 0))
+	fmt.Println(Includes(n, 1))
+	fmt.Println(Includes(n, 4))
+	fmt.Println(Includes(n, 5))
+	fmt.Println(Includes(n, 6))
+	// Output:
+	// false
+	// true
+	// true
+	// true
+	// false
 }
 
 func TestEvery(t *testing.T) {
@@ -88,6 +105,16 @@ func TestEvery(t *testing.T) {
 	})
 }
 
+func ExampleEvery() {
+	n := []int{1, 2, 3, 4, 5}
+
+	fmt.Println(Every(n, func(n int) bool { return n > 0 }))
+	fmt.Println(Every(n, func(n int) bool { return n < 3 }))
+	// Output:
+	// true
+	// false
+}
+
 func TestSome(t *testing.T) {
 	RegisterTestingT(t)
 
@@ -141,6 +168,18 @@ func TestSome(t *testing.T) {
 			{"five", true},
 		}, matchFn)).To(BeTrue())
 	})
+}
+
+func ExampleSome() {
+	n := []int{1, 2, 3, 4, 5}
+
+	fmt.Println(Some(n, func(n int) bool { return n > 0 }))
+	fmt.Println(Some(n, func(n int) bool { return n < 3 }))
+	fmt.Println(Some(n, func(n int) bool { return n < 0 }))
+	// Output:
+	// true
+	// true
+	// false
 }
 
 func Test_FindFunctions(t *testing.T) {
@@ -235,6 +274,30 @@ func Test_FindFunctions(t *testing.T) {
 	})
 }
 
+func ExampleFind() {
+	n := []int{1, 2, 3, 4, 5}
+
+	fmt.Println(Find(n, func(n int) bool { return n > 0 }))
+	fmt.Println(Find(n, func(n int) bool { return n > 3 }))
+	fmt.Println(Find(n, func(n int) bool { return n < 0 }))
+	// Output:
+	// 1
+	// 4
+	// 0
+}
+
+func ExampleFindPtr() {
+	n := []int{1, 2, 3, 4, 5}
+
+	fmt.Println(FindPtr(n, func(n int) bool { return n > 0 }) == &n[0])
+	fmt.Println(FindPtr(n, func(n int) bool { return n > 3 }) == &n[3])
+	fmt.Println(FindPtr(n, func(n int) bool { return n < 0 }) == nil)
+	// Output:
+	// true
+	// true
+	// true
+}
+
 func Test_FilterFunctions(t *testing.T) {
 	RegisterTestingT(t)
 
@@ -316,6 +379,30 @@ func Test_FilterFunctions(t *testing.T) {
 	})
 }
 
+func ExampleFilter() {
+	n := []int{1, 2, 3, 4, 5}
+
+	fmt.Println(Filter(n, func(n int) bool { return n > 0 }))
+	fmt.Println(Filter(n, func(n int) bool { return n > 3 }))
+	fmt.Println(Filter(n, func(n int) bool { return n < 0 }))
+	// Output:
+	// [1 2 3 4 5]
+	// [4 5]
+	// []
+}
+
+func ExampleFilterOut() {
+	n := []int{1, 2, 3, 4, 5}
+
+	fmt.Println(FilterOut(n, func(n int) bool { return n > 0 }))
+	fmt.Println(FilterOut(n, func(n int) bool { return n > 3 }))
+	fmt.Println(FilterOut(n, func(n int) bool { return n < 0 }))
+	// Output:
+	// []
+	// [1 2 3]
+	// [1 2 3 4 5]
+}
+
 func TestDiff(t *testing.T) {
 	RegisterTestingT(t)
 
@@ -392,4 +479,17 @@ func TestDiff(t *testing.T) {
 		Expect(Diff([]string{"a", "b", "c"}, []string{"b", "d"})).To(Equal([]string{"a", "c"}))
 		Expect(Diff([]string{"a", "b", "c"}, []string{"d", "b", "d"})).To(Equal([]string{"a", "c"}))
 	})
+}
+
+func ExampleDiff() {
+	n1 := []int{1, 2, 3, 4, 5}
+	n2 := []int{2, 4, 6, 8}
+
+	fmt.Println(Diff(n1, nil))
+	fmt.Println(Diff(n1, n2))
+	fmt.Println(Diff(nil, n2))
+	// Output:
+	// [1 2 3 4 5]
+	// [1 3 5]
+	// []
 }

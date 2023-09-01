@@ -2,6 +2,13 @@
 
 A generics-based toolset for working with slices.
 
+Advantages:
+- Simple and clear API
+- Compatible with GO standard library
+
+Yet to be done:
+- Improve performance. Some functions are not optimal and should not be used in critical paths.
+
 ## Usage
 
 ### Download the package

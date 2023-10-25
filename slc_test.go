@@ -15,8 +15,8 @@ func Test_IncludesFunctions(t *testing.T) {
 	t.Run("int", func(t *testing.T) {
 		RegisterTestingT(t)
 
-		Expect(Includes(nil, 1)).To(BeFalse())
-		Expect(Includes(nil, 0)).To(BeFalse())
+		Expect(Includes[[]int](nil, 1)).To(BeFalse())
+		Expect(Includes[[]int](nil, 0)).To(BeFalse())
 		Expect(Includes([]int{}, 9)).To(BeFalse())
 		Expect(Includes([]int{1, 2, 3, 4, 5}, 9)).To(BeFalse())
 		Expect(Includes([]int{1, 2, 3, 4, 5}, 1)).To(BeTrue())
@@ -25,8 +25,8 @@ func Test_IncludesFunctions(t *testing.T) {
 
 		isFour := func(n int) bool { return n == 4 }
 		isTen := func(n int) bool { return n == 10 }
-		Expect(IncludesFunc(nil, isFour)).To(BeFalse())
-		Expect(IncludesFunc(nil, isTen)).To(BeFalse())
+		Expect(IncludesFunc[[]int](nil, isFour)).To(BeFalse())
+		Expect(IncludesFunc[[]int](nil, isTen)).To(BeFalse())
 		Expect(IncludesFunc([]int{}, isFour)).To(BeFalse())
 		Expect(IncludesFunc([]int{}, isTen)).To(BeFalse())
 		Expect(IncludesFunc([]int{1, 2, 3, 4, 5}, isFour)).To(BeTrue())
@@ -36,8 +36,8 @@ func Test_IncludesFunctions(t *testing.T) {
 	t.Run("string", func(t *testing.T) {
 		RegisterTestingT(t)
 
-		Expect(Includes(nil, "")).To(BeFalse())
-		Expect(Includes(nil, "zz")).To(BeFalse())
+		Expect(Includes[[]string](nil, "")).To(BeFalse())
+		Expect(Includes[[]string](nil, "zz")).To(BeFalse())
 		Expect(Includes([]string{}, "")).To(BeFalse())
 		Expect(Includes([]string{"a", "b", "c"}, "zz")).To(BeFalse())
 		Expect(Includes([]string{"a", "b", "c"}, "a")).To(BeTrue())
@@ -45,11 +45,32 @@ func Test_IncludesFunctions(t *testing.T) {
 		Expect(Includes([]string{"a", "b", "c"}, "c")).To(BeTrue())
 
 		isB := func(s string) bool { return s == "b" }
-		Expect(IncludesFunc(nil, isB)).To(BeFalse())
+		Expect(IncludesFunc[[]string](nil, isB)).To(BeFalse())
 		Expect(IncludesFunc([]string{}, isB)).To(BeFalse())
 		Expect(IncludesFunc([]string{"a"}, isB)).To(BeFalse())
 		Expect(IncludesFunc([]string{"a", "b"}, isB)).To(BeTrue())
 		Expect(IncludesFunc([]string{"a", "b", "c"}, isB)).To(BeTrue())
+	})
+
+	t.Run("namedType", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		type mySlice []string
+
+		Expect(Includes[mySlice](nil, "")).To(BeFalse())
+		Expect(Includes[mySlice](nil, "zz")).To(BeFalse())
+		Expect(Includes(mySlice{}, "")).To(BeFalse())
+		Expect(Includes(mySlice{"a", "b", "c"}, "zz")).To(BeFalse())
+		Expect(Includes(mySlice{"a", "b", "c"}, "a")).To(BeTrue())
+		Expect(Includes(mySlice{"a", "b", "c"}, "b")).To(BeTrue())
+		Expect(Includes(mySlice{"a", "b", "c"}, "c")).To(BeTrue())
+
+		isB := func(s string) bool { return s == "b" }
+		Expect(IncludesFunc[mySlice](nil, isB)).To(BeFalse())
+		Expect(IncludesFunc(mySlice{}, isB)).To(BeFalse())
+		Expect(IncludesFunc(mySlice{"a"}, isB)).To(BeFalse())
+		Expect(IncludesFunc(mySlice{"a", "b"}, isB)).To(BeTrue())
+		Expect(IncludesFunc(mySlice{"a", "b", "c"}, isB)).To(BeTrue())
 	})
 }
 
@@ -93,8 +114,8 @@ func Test_IndexFunctions(t *testing.T) {
 	t.Run("int", func(t *testing.T) {
 		RegisterTestingT(t)
 
-		Expect(Index(nil, 1)).To(Equal(-1))
-		Expect(Index(nil, 0)).To(Equal(-1))
+		Expect(Index[[]int](nil, 1)).To(Equal(-1))
+		Expect(Index[[]int](nil, 0)).To(Equal(-1))
 		Expect(Index([]int{}, 9)).To(Equal(-1))
 		Expect(Index([]int{1, 2, 3, 4, 5}, 9)).To(Equal(-1))
 		Expect(Index([]int{1, 2, 3, 4, 5}, 1)).To(Equal(0))
@@ -103,8 +124,8 @@ func Test_IndexFunctions(t *testing.T) {
 
 		isFour := func(n int) bool { return n == 4 }
 		isTen := func(n int) bool { return n == 10 }
-		Expect(IndexFunc(nil, isFour)).To(Equal(-1))
-		Expect(IndexFunc(nil, isTen)).To(Equal(-1))
+		Expect(IndexFunc[[]int](nil, isFour)).To(Equal(-1))
+		Expect(IndexFunc[[]int](nil, isTen)).To(Equal(-1))
 		Expect(IndexFunc([]int{}, isFour)).To(Equal(-1))
 		Expect(IndexFunc([]int{}, isTen)).To(Equal(-1))
 		Expect(IndexFunc([]int{1, 2, 3, 4, 5}, isFour)).To(Equal(3))
@@ -114,8 +135,8 @@ func Test_IndexFunctions(t *testing.T) {
 	t.Run("string", func(t *testing.T) {
 		RegisterTestingT(t)
 
-		Expect(Index(nil, "")).To(Equal(-1))
-		Expect(Index(nil, "zz")).To(Equal(-1))
+		Expect(Index[[]string](nil, "")).To(Equal(-1))
+		Expect(Index[[]string](nil, "zz")).To(Equal(-1))
 		Expect(Index([]string{}, "")).To(Equal(-1))
 		Expect(Index([]string{"a", "b", "c"}, "zz")).To(Equal(-1))
 		Expect(Index([]string{"a", "b", "c"}, "a")).To(Equal(0))
@@ -123,11 +144,32 @@ func Test_IndexFunctions(t *testing.T) {
 		Expect(Index([]string{"a", "b", "c"}, "c")).To(Equal(2))
 
 		isB := func(s string) bool { return s == "b" }
-		Expect(IndexFunc(nil, isB)).To(Equal(-1))
+		Expect(IndexFunc[[]string](nil, isB)).To(Equal(-1))
 		Expect(IndexFunc([]string{}, isB)).To(Equal(-1))
 		Expect(IndexFunc([]string{"a"}, isB)).To(Equal(-1))
 		Expect(IndexFunc([]string{"a", "b"}, isB)).To(Equal(1))
 		Expect(IndexFunc([]string{"a", "b", "c"}, isB)).To(Equal(1))
+	})
+
+	t.Run("namedType", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		type mySlice []string
+
+		Expect(Index[mySlice](nil, "")).To(Equal(-1))
+		Expect(Index[mySlice](nil, "zz")).To(Equal(-1))
+		Expect(Index(mySlice{}, "")).To(Equal(-1))
+		Expect(Index(mySlice{"a", "b", "c"}, "zz")).To(Equal(-1))
+		Expect(Index(mySlice{"a", "b", "c"}, "a")).To(Equal(0))
+		Expect(Index(mySlice{"a", "b", "c"}, "b")).To(Equal(1))
+		Expect(Index(mySlice{"a", "b", "c"}, "c")).To(Equal(2))
+
+		isB := func(s string) bool { return s == "b" }
+		Expect(IndexFunc[mySlice](nil, isB)).To(Equal(-1))
+		Expect(IndexFunc(mySlice{}, isB)).To(Equal(-1))
+		Expect(IndexFunc(mySlice{"a"}, isB)).To(Equal(-1))
+		Expect(IndexFunc(mySlice{"a", "b"}, isB)).To(Equal(1))
+		Expect(IndexFunc(mySlice{"a", "b", "c"}, isB)).To(Equal(1))
 	})
 }
 
@@ -173,7 +215,7 @@ func TestEvery(t *testing.T) {
 
 		matchFn := func(n int) bool { return false }
 
-		Expect(Every(nil, matchFn)).To(BeTrue())
+		Expect(Every[[]int](nil, matchFn)).To(BeTrue())
 		Expect(Every([]int{}, matchFn)).To(BeTrue())
 		Expect(Every([]int{1, 2, 3, 4, 5}, matchFn)).To(BeFalse())
 	})
@@ -183,7 +225,7 @@ func TestEvery(t *testing.T) {
 
 		matchFn := func(n int) bool { return true }
 
-		Expect(Every(nil, matchFn)).To(BeTrue())
+		Expect(Every[[]int](nil, matchFn)).To(BeTrue())
 		Expect(Every([]int{}, matchFn)).To(BeTrue())
 		Expect(Every([]int{1, 2, 3, 4, 5}, matchFn)).To(BeTrue())
 	})
@@ -193,7 +235,7 @@ func TestEvery(t *testing.T) {
 
 		matchFn := func(n int) bool { return n%2 == 0 }
 
-		Expect(Every(nil, matchFn)).To(BeTrue())
+		Expect(Every[[]int](nil, matchFn)).To(BeTrue())
 		Expect(Every([]int{}, matchFn)).To(BeTrue())
 		Expect(Every([]int{1, 2, 3, 4, 5}, matchFn)).To(BeFalse())
 	})
@@ -208,7 +250,7 @@ func TestEvery(t *testing.T) {
 
 		matchFn := func(v tt) bool { return v.V }
 
-		Expect(Every(nil, matchFn)).To(BeTrue())
+		Expect(Every[[]tt](nil, matchFn)).To(BeTrue())
 		Expect(Every([]tt{}, matchFn)).To(BeTrue())
 		Expect(Every([]tt{
 			{"one", true},
@@ -224,6 +266,18 @@ func TestEvery(t *testing.T) {
 			{"four", true},
 			{"five", true},
 		}, matchFn)).To(BeTrue())
+	})
+
+	t.Run("namedType", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		type mySlice []uint32
+
+		matchFn := func(n uint32) bool { return n%2 == 0 }
+
+		Expect(Every[mySlice](nil, matchFn)).To(BeTrue())
+		Expect(Every(mySlice{}, matchFn)).To(BeTrue())
+		Expect(Every(mySlice{1, 2, 3, 4, 5}, matchFn)).To(BeFalse())
 	})
 }
 
@@ -245,7 +299,7 @@ func TestSome(t *testing.T) {
 
 		matchFn := func(n int) bool { return false }
 
-		Expect(Some(nil, matchFn)).To(BeFalse())
+		Expect(Some[[]int](nil, matchFn)).To(BeFalse())
 		Expect(Some([]int{}, matchFn)).To(BeFalse())
 		Expect(Some([]int{1, 2, 3, 4, 5}, matchFn)).To(BeFalse())
 	})
@@ -255,7 +309,7 @@ func TestSome(t *testing.T) {
 
 		matchFn := func(n int) bool { return true }
 
-		Expect(Some(nil, matchFn)).To(BeFalse())
+		Expect(Some[[]int](nil, matchFn)).To(BeFalse())
 		Expect(Some([]int{}, matchFn)).To(BeFalse())
 		Expect(Some([]int{1, 2, 3, 4, 5}, matchFn)).To(BeTrue())
 	})
@@ -265,7 +319,7 @@ func TestSome(t *testing.T) {
 
 		matchFn := func(n int) bool { return n%2 == 0 }
 
-		Expect(Some(nil, matchFn)).To(BeFalse())
+		Expect(Some[[]int](nil, matchFn)).To(BeFalse())
 		Expect(Some([]int{}, matchFn)).To(BeFalse())
 		Expect(Some([]int{1, 2, 3, 4, 5}, matchFn)).To(BeTrue())
 	})
@@ -280,7 +334,7 @@ func TestSome(t *testing.T) {
 
 		matchFn := func(v tt) bool { return v.V }
 
-		Expect(Some(nil, matchFn)).To(BeFalse())
+		Expect(Some[[]tt](nil, matchFn)).To(BeFalse())
 		Expect(Some([]tt{}, matchFn)).To(BeFalse())
 		Expect(Some([]tt{
 			{"one", true},
@@ -289,6 +343,18 @@ func TestSome(t *testing.T) {
 			{"four", false},
 			{"five", true},
 		}, matchFn)).To(BeTrue())
+	})
+
+	t.Run("namedType", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		type mySlice []uint64
+
+		matchFn := func(n uint64) bool { return n%2 == 0 }
+
+		Expect(Some[mySlice](nil, matchFn)).To(BeFalse())
+		Expect(Some(mySlice{}, matchFn)).To(BeFalse())
+		Expect(Some(mySlice{1, 2, 3, 4, 5}, matchFn)).To(BeTrue())
 	})
 }
 
@@ -312,12 +378,12 @@ func Test_FindFunctions(t *testing.T) {
 
 		matchFn := func(n int) bool { return false }
 
-		Expect(Find(nil, matchFn)).To(Equal(0))
+		Expect(Find[[]int](nil, matchFn)).To(Equal(0))
 		Expect(Find([]int{}, matchFn)).To(Equal(0))
 		Expect(Find([]int{7}, matchFn)).To(Equal(0))
 		Expect(Find([]int{1, 2, 3, 4, 5}, matchFn)).To(Equal(0))
 
-		Expect(FindPtr(nil, matchFn)).To(BeNil())
+		Expect(FindPtr[[]int](nil, matchFn)).To(BeNil())
 		Expect(FindPtr([]int{}, matchFn)).To(BeNil())
 		Expect(FindPtr([]int{7}, matchFn)).To(BeNil())
 		Expect(FindPtr([]int{1, 2, 3, 4, 5}, matchFn)).To(BeNil())
@@ -328,13 +394,13 @@ func Test_FindFunctions(t *testing.T) {
 
 		matchFn := func(n int) bool { return true }
 
-		Expect(Find(nil, matchFn)).To(Equal(0))
+		Expect(Find[[]int](nil, matchFn)).To(Equal(0))
 		Expect(Find([]int{}, matchFn)).To(Equal(0))
 		Expect(Find([]int{7}, matchFn)).To(Equal(7))
 		Expect(Find([]int{1, 2, 3, 4, 5}, matchFn)).To(Equal(1))
 
 		var s []int
-		Expect(FindPtr(nil, matchFn)).To(BeNil())
+		Expect(FindPtr[[]int](nil, matchFn)).To(BeNil())
 		Expect(FindPtr([]int{}, matchFn)).To(BeNil())
 		s = []int{7}
 		Expect(FindPtr(s, matchFn)).To(BeIdenticalTo(&s[0]))
@@ -347,14 +413,14 @@ func Test_FindFunctions(t *testing.T) {
 
 		matchFn := func(n int) bool { return n%2 == 0 }
 
-		Expect(Find(nil, matchFn)).To(Equal(0))
+		Expect(Find[[]int](nil, matchFn)).To(Equal(0))
 		Expect(Find([]int{}, matchFn)).To(Equal(0))
 		Expect(Find([]int{7}, matchFn)).To(Equal(0))
 		Expect(Find([]int{8}, matchFn)).To(Equal(8))
 		Expect(Find([]int{1, 2, 3, 4, 5}, matchFn)).To(Equal(2))
 
 		var s []int
-		Expect(FindPtr(nil, matchFn)).To(BeNil())
+		Expect(FindPtr[[]int](nil, matchFn)).To(BeNil())
 		Expect(FindPtr([]int{}, matchFn)).To(BeNil())
 		Expect(FindPtr([]int{7}, matchFn)).To(BeNil())
 		s = []int{8}
@@ -373,7 +439,7 @@ func Test_FindFunctions(t *testing.T) {
 
 		matchFn := func(v tt) bool { return v.V }
 
-		Expect(Find(nil, matchFn)).To(Equal(tt{}))
+		Expect(Find[[]tt](nil, matchFn)).To(Equal(tt{}))
 		Expect(Find([]tt{}, matchFn)).To(Equal(tt{}))
 		Expect(Find([]tt{
 			{"one", false},
@@ -383,7 +449,7 @@ func Test_FindFunctions(t *testing.T) {
 			{"five", true},
 		}, matchFn)).To(Equal(tt{"two", true}))
 
-		Expect(FindPtr(nil, matchFn)).To(BeNil())
+		Expect(FindPtr[[]tt](nil, matchFn)).To(BeNil())
 		Expect(FindPtr([]tt{}, matchFn)).To(BeNil())
 		s := []tt{
 			{"one", false},
@@ -392,6 +458,29 @@ func Test_FindFunctions(t *testing.T) {
 			{"four", false},
 			{"five", true},
 		}
+		Expect(FindPtr(s, matchFn)).To(BeIdenticalTo(&s[1]))
+	})
+
+	t.Run("namedType", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		type mySlice []uint8
+
+		matchFn := func(n uint8) bool { return n%2 == 0 }
+
+		Expect(Find[mySlice](nil, matchFn)).To(Equal(uint8(0)))
+		Expect(Find(mySlice{}, matchFn)).To(Equal(uint8(0)))
+		Expect(Find(mySlice{7}, matchFn)).To(Equal(uint8(0)))
+		Expect(Find(mySlice{8}, matchFn)).To(Equal(uint8(8)))
+		Expect(Find(mySlice{1, 2, 3, 4, 5}, matchFn)).To(Equal(uint8(2)))
+
+		var s mySlice
+		Expect(FindPtr[mySlice](nil, matchFn)).To(BeNil())
+		Expect(FindPtr(mySlice{}, matchFn)).To(BeNil())
+		Expect(FindPtr(mySlice{7}, matchFn)).To(BeNil())
+		s = mySlice{8}
+		Expect(FindPtr(s, matchFn)).To(BeIdenticalTo(&s[0]))
+		s = mySlice{1, 2, 3, 4, 5}
 		Expect(FindPtr(s, matchFn)).To(BeIdenticalTo(&s[1]))
 	})
 }
@@ -426,7 +515,7 @@ func TestMap(t *testing.T) {
 	t.Run("int", func(t *testing.T) {
 		RegisterTestingT(t)
 
-		Expect(Map(nil, strconv.Itoa)).To(BeNil())
+		Expect(Map[[]int](nil, strconv.Itoa)).To(BeNil())
 		Expect(Map([]int{}, strconv.Itoa)).To(BeNil())
 		Expect(Map([]int{1}, strconv.Itoa)).To(Equal([]string{"1"}))
 		Expect(Map([]int{1, 2}, strconv.Itoa)).To(Equal([]string{"1", "2"}))
@@ -438,7 +527,7 @@ func TestMap(t *testing.T) {
 
 		isAB := func(s string) bool { return s == "a" || s == "b" }
 
-		Expect(Map(nil, isAB)).To(BeNil())
+		Expect(Map[[]string](nil, isAB)).To(BeNil())
 		Expect(Map([]string{}, isAB)).To(BeNil())
 		Expect(Map([]string{"a", "b", "c"}, isAB)).To(Equal([]bool{true, true, false}))
 	})
@@ -453,7 +542,7 @@ func TestMap(t *testing.T) {
 
 		mapFn := func(v tt) string { return "_" + v.S + "_" }
 
-		Expect(Map(nil, mapFn)).To(BeNil())
+		Expect(Map[[]tt](nil, mapFn)).To(BeNil())
 		Expect(Map([]tt{}, mapFn)).To(BeNil())
 
 		Expect(Map([]tt{
@@ -469,6 +558,18 @@ func TestMap(t *testing.T) {
 			"_four_",
 			"_five_",
 		}))
+	})
+
+	t.Run("namedType", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		type mySlice []string
+
+		isAB := func(s string) bool { return s == "a" || s == "b" }
+
+		Expect(Map[mySlice](nil, isAB)).To(BeNil())
+		Expect(Map(mySlice{}, isAB)).To(BeNil())
+		Expect(Map(mySlice{"a", "b", "c"}, isAB)).To(Equal([]bool{true, true, false}))
 	})
 }
 
@@ -488,7 +589,7 @@ func TestReduce(t *testing.T) {
 
 		sum := func(acc, n int) int { return acc + n }
 
-		Expect(Reduce(nil, sum)).To(Equal(0))
+		Expect(Reduce[[]int](nil, sum)).To(Equal(0))
 		Expect(Reduce([]int{}, sum)).To(Equal(0))
 		Expect(Reduce([]int{1}, sum)).To(Equal(1))
 		Expect(Reduce([]int{1, 2}, sum)).To(Equal(3))
@@ -500,7 +601,7 @@ func TestReduce(t *testing.T) {
 
 		count := func(acc int, s string) int { return acc + 1 }
 
-		Expect(Reduce(nil, count)).To(Equal(0))
+		Expect(Reduce[[]string](nil, count)).To(Equal(0))
 		Expect(Reduce([]string{}, count)).To(Equal(0))
 		Expect(Reduce([]string{"a", "b", "c"}, count)).To(Equal(3))
 	})
@@ -515,7 +616,7 @@ func TestReduce(t *testing.T) {
 
 		concat := func(acc string, v tt) string { return acc + "," + v.S }
 
-		Expect(Reduce(nil, concat)).To(Equal(""))
+		Expect(Reduce[[]tt](nil, concat)).To(Equal(""))
 		Expect(Reduce([]tt{}, concat)).To(Equal(""))
 
 		Expect(Reduce([]tt{
@@ -525,6 +626,18 @@ func TestReduce(t *testing.T) {
 			{"four", false},
 			{"five", true},
 		}, concat)).To(Equal(",one,two,three,four,five"))
+	})
+
+	t.Run("namedType", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		type mySlice []string
+
+		count := func(acc int, s string) int { return acc + 1 }
+
+		Expect(Reduce[mySlice](nil, count)).To(Equal(0))
+		Expect(Reduce(mySlice{}, count)).To(Equal(0))
+		Expect(Reduce(mySlice{"a", "b", "c"}, count)).To(Equal(3))
 	})
 }
 
@@ -544,8 +657,8 @@ func Test_FilterFunctions(t *testing.T) {
 
 		matchFn := func(n int) bool { return false }
 
-		Expect(Filter(nil, matchFn)).To(BeEmpty())
-		Expect(FilterOut(nil, matchFn)).To(BeEmpty())
+		Expect(Filter[[]int](nil, matchFn)).To(BeEmpty())
+		Expect(FilterOut[[]int](nil, matchFn)).To(BeEmpty())
 		Expect(Filter([]int{}, matchFn)).To(BeEmpty())
 		Expect(FilterOut([]int{}, matchFn)).To(BeEmpty())
 		Expect(Filter([]int{1, 2, 3, 4, 5}, matchFn)).To(BeEmpty())
@@ -557,8 +670,8 @@ func Test_FilterFunctions(t *testing.T) {
 
 		matchFn := func(n int) bool { return true }
 
-		Expect(Filter(nil, matchFn)).To(BeEmpty())
-		Expect(FilterOut(nil, matchFn)).To(BeEmpty())
+		Expect(Filter[[]int](nil, matchFn)).To(BeEmpty())
+		Expect(FilterOut[[]int](nil, matchFn)).To(BeEmpty())
 		Expect(Filter([]int{}, matchFn)).To(BeEmpty())
 		Expect(FilterOut([]int{}, matchFn)).To(BeEmpty())
 		Expect(Filter([]int{1, 2, 3, 4, 5}, matchFn)).To(Equal([]int{1, 2, 3, 4, 5}))
@@ -570,8 +683,8 @@ func Test_FilterFunctions(t *testing.T) {
 
 		matchFn := func(n int) bool { return n%2 == 0 }
 
-		Expect(Filter(nil, matchFn)).To(BeEmpty())
-		Expect(FilterOut(nil, matchFn)).To(BeEmpty())
+		Expect(Filter[[]int](nil, matchFn)).To(BeEmpty())
+		Expect(FilterOut[[]int](nil, matchFn)).To(BeEmpty())
 		Expect(Filter([]int{}, matchFn)).To(BeEmpty())
 		Expect(FilterOut([]int{}, matchFn)).To(BeEmpty())
 		Expect(Filter([]int{1, 2, 3, 4, 5}, matchFn)).To(Equal([]int{2, 4}))
@@ -588,8 +701,8 @@ func Test_FilterFunctions(t *testing.T) {
 
 		matchFn := func(v tt) bool { return v.V }
 
-		Expect(Filter(nil, matchFn)).To(BeEmpty())
-		Expect(FilterOut(nil, matchFn)).To(BeEmpty())
+		Expect(Filter[[]tt](nil, matchFn)).To(BeEmpty())
+		Expect(FilterOut[[]tt](nil, matchFn)).To(BeEmpty())
 		Expect(Filter([]tt{}, matchFn)).To(BeEmpty())
 		Expect(FilterOut([]tt{}, matchFn)).To(BeEmpty())
 
@@ -614,6 +727,21 @@ func Test_FilterFunctions(t *testing.T) {
 			{"three", false},
 			{"four", false},
 		}))
+	})
+
+	t.Run("namedType", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		type mySlice []int
+
+		matchFn := func(n int) bool { return n%2 == 0 }
+
+		Expect(Filter[mySlice](nil, matchFn)).To(BeEmpty())
+		Expect(FilterOut[mySlice](nil, matchFn)).To(BeEmpty())
+		Expect(Filter(mySlice{}, matchFn)).To(BeEmpty())
+		Expect(FilterOut(mySlice{}, matchFn)).To(BeEmpty())
+		Expect(Filter(mySlice{1, 2, 3, 4, 5}, matchFn)).To(Equal(mySlice{2, 4}))
+		Expect(FilterOut(mySlice{1, 2, 3, 4, 5}, matchFn)).To(Equal(mySlice{1, 3, 5}))
 	})
 }
 
@@ -647,7 +775,7 @@ func TestUniq(t *testing.T) {
 	t.Run("int", func(t *testing.T) {
 		RegisterTestingT(t)
 
-		Expect(Uniq[int](nil)).To(BeNil())
+		Expect(Uniq[[]int](nil)).To(BeNil())
 		Expect(Uniq([]int{})).To(BeNil())
 		Expect(Uniq([]int{1})).To(Equal([]int{1}))
 		Expect(Uniq([]int{1, 2, 3})).To(Equal([]int{1, 2, 3}))
@@ -661,7 +789,7 @@ func TestUniq(t *testing.T) {
 	t.Run("string", func(t *testing.T) {
 		RegisterTestingT(t)
 
-		Expect(Uniq[string](nil)).To(BeNil())
+		Expect(Uniq[[]string](nil)).To(BeNil())
 		Expect(Uniq([]string{})).To(BeNil())
 		Expect(Uniq([]string{"a"})).To(Equal([]string{"a"}))
 		Expect(Uniq([]string{"a", "b", "c"})).To(Equal([]string{"a", "b", "c"}))
@@ -671,12 +799,28 @@ func TestUniq(t *testing.T) {
 		Expect(Uniq([]string{"a", "b", "b", "a"})).To(Equal([]string{"a", "b"}))
 		Expect(Uniq([]string{"a", "c", "b", "b"})).To(Equal([]string{"a", "c", "b"}))
 	})
+
+	t.Run("namedType", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		type mySlice []string
+
+		Expect(Uniq[mySlice](nil)).To(BeNil())
+		Expect(Uniq(mySlice{})).To(BeNil())
+		Expect(Uniq(mySlice{"a"})).To(Equal(mySlice{"a"}))
+		Expect(Uniq(mySlice{"a", "b", "c"})).To(Equal(mySlice{"a", "b", "c"}))
+
+		Expect(Uniq(mySlice{"a", "a", "a"})).To(Equal(mySlice{"a"}))
+		Expect(Uniq(mySlice{"a", "b", "a", "a"})).To(Equal(mySlice{"a", "b"}))
+		Expect(Uniq(mySlice{"a", "b", "b", "a"})).To(Equal(mySlice{"a", "b"}))
+		Expect(Uniq(mySlice{"a", "c", "b", "b"})).To(Equal(mySlice{"a", "c", "b"}))
+	})
 }
 
 func ExampleUniq() {
 	fmt.Println(Uniq([]int{1, 1, 1}))
 	fmt.Println(Uniq([]string{"a", "b", "b", "a"}))
-	fmt.Println(Uniq[int](nil))
+	fmt.Println(Uniq[[]int](nil))
 	// Output:
 	// [1]
 	// [a b]
@@ -691,7 +835,7 @@ func TestUniqFunc(t *testing.T) {
 
 		equalsInt := func(a, b int) bool { return a == b }
 
-		Expect(UniqFunc(nil, equalsInt)).To(BeNil())
+		Expect(UniqFunc[[]int](nil, equalsInt)).To(BeNil())
 		Expect(UniqFunc([]int{}, equalsInt)).To(BeNil())
 		Expect(UniqFunc([]int{1}, equalsInt)).To(Equal([]int{1}))
 		Expect(UniqFunc([]int{1, 2, 3}, equalsInt)).To(Equal([]int{1, 2, 3}))
@@ -707,7 +851,7 @@ func TestUniqFunc(t *testing.T) {
 
 		equalsStr := func(a, b string) bool { return a == b }
 
-		Expect(UniqFunc(nil, equalsStr)).To(BeNil())
+		Expect(UniqFunc[[]string](nil, equalsStr)).To(BeNil())
 		Expect(UniqFunc([]string{}, equalsStr)).To(BeNil())
 		Expect(UniqFunc([]string{"a"}, equalsStr)).To(Equal([]string{"a"}))
 		Expect(UniqFunc([]string{"a", "b", "c"}, equalsStr)).To(Equal([]string{"a", "b", "c"}))
@@ -716,6 +860,24 @@ func TestUniqFunc(t *testing.T) {
 		Expect(UniqFunc([]string{"a", "b", "a", "a"}, equalsStr)).To(Equal([]string{"a", "b"}))
 		Expect(UniqFunc([]string{"a", "b", "b", "a"}, equalsStr)).To(Equal([]string{"a", "b"}))
 		Expect(UniqFunc([]string{"a", "c", "b", "b"}, equalsStr)).To(Equal([]string{"a", "c", "b"}))
+	})
+
+	t.Run("namedType", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		type mySlice []string
+
+		equalsStr := func(a, b string) bool { return a == b }
+
+		Expect(UniqFunc[mySlice](nil, equalsStr)).To(BeNil())
+		Expect(UniqFunc(mySlice{}, equalsStr)).To(BeNil())
+		Expect(UniqFunc(mySlice{"a"}, equalsStr)).To(Equal(mySlice{"a"}))
+		Expect(UniqFunc(mySlice{"a", "b", "c"}, equalsStr)).To(Equal(mySlice{"a", "b", "c"}))
+
+		Expect(UniqFunc(mySlice{"a", "a", "a"}, equalsStr)).To(Equal(mySlice{"a"}))
+		Expect(UniqFunc(mySlice{"a", "b", "a", "a"}, equalsStr)).To(Equal(mySlice{"a", "b"}))
+		Expect(UniqFunc(mySlice{"a", "b", "b", "a"}, equalsStr)).To(Equal(mySlice{"a", "b"}))
+		Expect(UniqFunc(mySlice{"a", "c", "b", "b"}, equalsStr)).To(Equal(mySlice{"a", "c", "b"}))
 	})
 }
 
@@ -781,6 +943,40 @@ func TestOverlap(t *testing.T) {
 							Expect(Overlap(tc.Left, tc.Right)).To(BeFalse())
 						} else {
 							Expect(Overlap(tc.Left, tc.Right)).To(BeTrue())
+						}
+					})
+				}
+			})
+		}
+	})
+
+	t.Run("namedType", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		type mySlice []string
+
+		genFn := func(n int) string {
+			return string([]byte{byte('a') + byte(n)})
+		}
+
+		groupedTestCases := getBinaryOperationCases(genFn, genFn)
+
+		for groupName, testCases := range groupedTestCases {
+			t.Run(groupName, func(t *testing.T) {
+				RegisterTestingT(t)
+
+				for _, tc := range testCases {
+					t.Run(tc.Name(), func(t *testing.T) {
+						RegisterTestingT(t)
+
+						if len(tc.Intersect) == 0 {
+							Expect(Overlap(mySlice(tc.Left), mySlice(tc.Right))).To(BeFalse())
+							Expect(Overlap(tc.Left, mySlice(tc.Right))).To(BeFalse())
+							Expect(Overlap(mySlice(tc.Left), tc.Right)).To(BeFalse())
+						} else {
+							Expect(Overlap(mySlice(tc.Left), mySlice(tc.Right))).To(BeTrue())
+							Expect(Overlap(tc.Left, mySlice(tc.Right))).To(BeTrue())
+							Expect(Overlap(mySlice(tc.Left), tc.Right)).To(BeTrue())
 						}
 					})
 				}
@@ -881,6 +1077,38 @@ func TestOverlapFunc(t *testing.T) {
 			})
 		}
 	})
+
+	t.Run("namedType", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		type mySlice1 []int
+		type mySlice2 []string
+
+		equalsFn := func(a int, b string) bool { return strconv.Itoa(a) == b }
+		groupedTestCases := getBinaryOperationCases(id[int], strconv.Itoa)
+
+		for groupName, testCases := range groupedTestCases {
+			t.Run(groupName, func(t *testing.T) {
+				RegisterTestingT(t)
+
+				for _, tc := range testCases {
+					t.Run(tc.Name(), func(t *testing.T) {
+						RegisterTestingT(t)
+
+						if len(tc.Intersect) == 0 {
+							Expect(OverlapFunc(mySlice1(tc.Left), mySlice2(tc.Right), equalsFn)).To(BeFalse())
+							Expect(OverlapFunc(tc.Left, mySlice2(tc.Right), equalsFn)).To(BeFalse())
+							Expect(OverlapFunc(mySlice1(tc.Left), tc.Right, equalsFn)).To(BeFalse())
+						} else {
+							Expect(OverlapFunc(mySlice1(tc.Left), mySlice2(tc.Right), equalsFn)).To(BeTrue())
+							Expect(OverlapFunc(tc.Left, mySlice2(tc.Right), equalsFn)).To(BeTrue())
+							Expect(OverlapFunc(mySlice1(tc.Left), tc.Right, equalsFn)).To(BeTrue())
+						}
+					})
+				}
+			})
+		}
+	})
 }
 
 func ExampleOverlapFunc() {
@@ -945,6 +1173,43 @@ func TestIntersect(t *testing.T) {
 							Expect(Intersect(tc.Left, tc.Right)).To(BeNil())
 						} else {
 							Expect(Intersect(tc.Left, tc.Right)).To(Equal(tc.Intersect))
+						}
+					})
+				}
+			})
+		}
+	})
+
+	t.Run("namedType", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		type mySlice []string
+
+		genFn := func(n int) string {
+			return string([]byte{byte('a') + byte(n)})
+		}
+
+		groupedTestCases := getBinaryOperationCases(genFn, genFn)
+
+		for groupName, testCases := range groupedTestCases {
+			t.Run(groupName, func(t *testing.T) {
+				RegisterTestingT(t)
+
+				for _, tc := range testCases {
+					t.Run(tc.Name(), func(t *testing.T) {
+						RegisterTestingT(t)
+
+						if len(tc.Intersect) == 0 {
+							Expect(Intersect(mySlice(tc.Left), mySlice(tc.Right))).To(BeNil())
+							Expect(Intersect(tc.Left, mySlice(tc.Right))).To(BeNil())
+							Expect(Intersect(mySlice(tc.Left), tc.Right)).To(BeNil())
+						} else {
+							Expect(Intersect(mySlice(tc.Left), mySlice(tc.Right))).
+								To(Equal(mySlice(tc.Intersect)))
+							Expect(Intersect(tc.Left, mySlice(tc.Right))).
+								To(Equal(mySlice(tc.Intersect)))
+							Expect(Intersect(mySlice(tc.Left), tc.Right)).
+								To(Equal(mySlice(tc.Intersect)))
 						}
 					})
 				}
@@ -1045,6 +1310,41 @@ func TestIntersectFunc(t *testing.T) {
 			})
 		}
 	})
+
+	t.Run("namedType", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		type mySlice1 []int
+		type mySlice2 []string
+
+		equalsFn := func(a int, b string) bool { return strconv.Itoa(a) == b }
+		groupedTestCases := getBinaryOperationCases(id[int], strconv.Itoa)
+
+		for groupName, testCases := range groupedTestCases {
+			t.Run(groupName, func(t *testing.T) {
+				RegisterTestingT(t)
+
+				for _, tc := range testCases {
+					t.Run(tc.Name(), func(t *testing.T) {
+						RegisterTestingT(t)
+
+						if len(tc.Intersect) == 0 {
+							Expect(IntersectFunc(mySlice1(tc.Left), mySlice2(tc.Right), equalsFn)).To(BeNil())
+							Expect(IntersectFunc(tc.Left, mySlice2(tc.Right), equalsFn)).To(BeNil())
+							Expect(IntersectFunc(mySlice1(tc.Left), tc.Right, equalsFn)).To(BeNil())
+						} else {
+							Expect(IntersectFunc(mySlice1(tc.Left), mySlice2(tc.Right), equalsFn)).
+								To(Equal(mySlice1(tc.Intersect)))
+							Expect(IntersectFunc(tc.Left, mySlice2(tc.Right), equalsFn)).
+								To(Equal(tc.Intersect))
+							Expect(IntersectFunc(mySlice1(tc.Left), tc.Right, equalsFn)).
+								To(Equal(mySlice1(tc.Intersect)))
+						}
+					})
+				}
+			})
+		}
+	})
 }
 
 func ExampleIntersectFunc() {
@@ -1108,6 +1408,42 @@ func TestDiff(t *testing.T) {
 							Expect(Diff(tc.Left, tc.Right)).To(BeNil())
 						} else {
 							Expect(Diff(tc.Left, tc.Right)).To(Equal(tc.Diff))
+						}
+					})
+				}
+			})
+		}
+	})
+
+	t.Run("namedType", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		type mySlice []string
+
+		genFn := func(n int) string {
+			return string([]byte{byte('a') + byte(n)})
+		}
+		groupedTestCases := getBinaryOperationCases(genFn, genFn)
+
+		for groupName, testCases := range groupedTestCases {
+			t.Run(groupName, func(t *testing.T) {
+				RegisterTestingT(t)
+
+				for _, tc := range testCases {
+					t.Run(tc.Name(), func(t *testing.T) {
+						RegisterTestingT(t)
+
+						if len(tc.Diff) == 0 {
+							Expect(Diff(mySlice(tc.Left), mySlice(tc.Right))).To(BeNil())
+							Expect(Diff(tc.Left, mySlice(tc.Right))).To(BeNil())
+							Expect(Diff(mySlice(tc.Left), tc.Right)).To(BeNil())
+						} else {
+							Expect(Diff(mySlice(tc.Left), mySlice(tc.Right))).
+								To(Equal(mySlice(tc.Diff)))
+							Expect(Diff(tc.Left, mySlice(tc.Right))).
+								To(Equal(mySlice(tc.Diff)))
+							Expect(Diff(mySlice(tc.Left), tc.Right)).
+								To(Equal(mySlice(tc.Diff)))
 						}
 					})
 				}
@@ -1209,6 +1545,41 @@ func TestDiffFunc(t *testing.T) {
 			})
 		}
 	})
+
+	t.Run("namedType", func(t *testing.T) {
+		RegisterTestingT(t)
+
+		type mySlice1 []int
+		type mySlice2 []string
+
+		equalsFn := func(a int, b string) bool { return strconv.Itoa(a) == b }
+		testCases := getBinaryOperationCases(id[int], strconv.Itoa)
+
+		for groupName, testCases := range testCases {
+			t.Run(groupName, func(t *testing.T) {
+				RegisterTestingT(t)
+
+				for _, tc := range testCases {
+					t.Run(tc.Name(), func(t *testing.T) {
+						RegisterTestingT(t)
+
+						if len(tc.Diff) == 0 {
+							Expect(DiffFunc(mySlice1(tc.Left), mySlice2(tc.Right), equalsFn)).To(BeNil())
+							Expect(DiffFunc(tc.Left, mySlice2(tc.Right), equalsFn)).To(BeNil())
+							Expect(DiffFunc(mySlice1(tc.Left), tc.Right, equalsFn)).To(BeNil())
+						} else {
+							Expect(DiffFunc(mySlice1(tc.Left), mySlice2(tc.Right), equalsFn)).
+								To(Equal(mySlice1(tc.Diff)))
+							Expect(DiffFunc(tc.Left, mySlice2(tc.Right), equalsFn)).
+								To(Equal(tc.Diff))
+							Expect(DiffFunc(mySlice1(tc.Left), tc.Right, equalsFn)).
+								To(Equal(mySlice1(tc.Diff)))
+						}
+					})
+				}
+			})
+		}
+	})
 }
 
 func ExampleDiffFunc() {
@@ -1217,9 +1588,9 @@ func ExampleDiffFunc() {
 
 	equalsFn := func(a int, b string) bool { return strconv.Itoa(a) == b }
 
-	fmt.Println(DiffFunc(n1, nil, equalsFn))
+	fmt.Println(DiffFunc[[]int, []string](n1, nil, equalsFn))
 	fmt.Println(DiffFunc(n1, n2, equalsFn))
-	fmt.Println(DiffFunc(nil, n2, equalsFn))
+	fmt.Println(DiffFunc[[]int, []string](nil, n2, equalsFn))
 	// Output:
 	// [1 2 3 4 5]
 	// [1 3 5]

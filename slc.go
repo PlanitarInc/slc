@@ -2,7 +2,7 @@ package slc
 
 // Includes detects if the given slice includes the given element.
 // The type of the slice elements must be comparable.
-func Includes[T comparable](slice []T, elem T) bool {
+func Includes[S ~[]E, E comparable](slice S, elem E) bool {
 	for i := range slice {
 		if slice[i] == elem {
 			return true
@@ -13,7 +13,7 @@ func Includes[T comparable](slice []T, elem T) bool {
 }
 
 // IncludesFunc detects if the given slice includes an element satisfying the predicate.
-func IncludesFunc[T any](slice []T, predicateFn func(elem T) bool) bool {
+func IncludesFunc[S ~[]E, E any](slice S, predicateFn func(elem E) bool) bool {
 	for i := range slice {
 		if predicateFn(slice[i]) {
 			return true
@@ -26,7 +26,7 @@ func IncludesFunc[T any](slice []T, predicateFn func(elem T) bool) bool {
 // Index returns the index of the given element in the slice. The function
 // returns -1 if the element is not found.
 // The type of the slice elements must be comparable.
-func Index[T comparable](slice []T, elem T) int {
+func Index[S ~[]E, E comparable](slice S, elem E) int {
 	for i := range slice {
 		if slice[i] == elem {
 			return i
@@ -38,7 +38,7 @@ func Index[T comparable](slice []T, elem T) int {
 
 // IndexFunc returns the index of an element satisfying the predicate. The function
 // returns -1 if such element is not found.
-func IndexFunc[T any](slice []T, predicateFn func(elem T) bool) int {
+func IndexFunc[S ~[]E, E any](slice S, predicateFn func(elem E) bool) int {
 	for i := range slice {
 		if predicateFn(slice[i]) {
 			return i
@@ -49,7 +49,7 @@ func IndexFunc[T any](slice []T, predicateFn func(elem T) bool) int {
 }
 
 // Every detects if all elements satisfy the given predicate.
-func Every[T any](slice []T, predicateFn func(elem T) bool) bool {
+func Every[S ~[]E, E any](slice S, predicateFn func(elem E) bool) bool {
 	for i := range slice {
 		if !predicateFn(slice[i]) {
 			return false
@@ -61,7 +61,7 @@ func Every[T any](slice []T, predicateFn func(elem T) bool) bool {
 
 // Some detects if there is at least one element satisfying the given
 // predicate.
-func Some[T any](slice []T, predicateFn func(elem T) bool) bool {
+func Some[S ~[]E, E any](slice S, predicateFn func(elem E) bool) bool {
 	for i := range slice {
 		if predicateFn(slice[i]) {
 			return true
@@ -73,20 +73,20 @@ func Some[T any](slice []T, predicateFn func(elem T) bool) bool {
 
 // Find returns the first element in the given slice satisfying the predicate.
 // A zero value is returned if no element is found.
-func Find[T any](slice []T, predicateFn func(elem T) bool) T {
+func Find[S ~[]E, E any](slice S, predicateFn func(elem E) bool) E {
 	for i := range slice {
 		if predicateFn(slice[i]) {
 			return slice[i]
 		}
 	}
 
-	var zero T
+	var zero E
 	return zero
 }
 
 // FindPtr returns a pointer to the first element in the given slice satisfying
 // the predicate. Nil is returned if no element is found.
-func FindPtr[T any](slice []T, predicateFn func(elem T) bool) *T {
+func FindPtr[S ~[]E, E any](slice S, predicateFn func(elem E) bool) *E {
 	for i := range slice {
 		if predicateFn(slice[i]) {
 			return &slice[i]
@@ -98,8 +98,8 @@ func FindPtr[T any](slice []T, predicateFn func(elem T) bool) *T {
 
 // Map returns a copy of the given slice containing all elements transformed by
 // the given function.
-func Map[T, S any](slice []T, transformFn func(elem T) S) []S {
-	var res []S
+func Map[S1 ~[]E1, E1, E2 any](slice S1, transformFn func(elem E1) E2) []E2 {
+	var res []E2
 	for i := range slice {
 		res = append(res, transformFn(slice[i]))
 	}
@@ -108,8 +108,8 @@ func Map[T, S any](slice []T, transformFn func(elem T) S) []S {
 
 // Reduce returns the result of applying the given function to each element of
 // the given slice. The function is applied left-to-right.
-func Reduce[T, S any](slice []T, accumulateFn func(acc S, elem T) S) S {
-	var res S
+func Reduce[S ~[]E, E, T any](slice S, accumulateFn func(acc T, elem E) T) T {
+	var res T
 	for i := range slice {
 		res = accumulateFn(res, slice[i])
 	}
@@ -120,8 +120,8 @@ func Reduce[T, S any](slice []T, accumulateFn func(acc S, elem T) S) S {
 // the given predicate.
 //
 // This function is the opposite of FilterOut().
-func Filter[T any](slice []T, predicateFn func(elem T) bool) []T {
-	var res []T
+func Filter[S ~[]E, E any](slice S, predicateFn func(elem E) bool) S {
+	var res S
 	for i := range slice {
 		if predicateFn(slice[i]) {
 			res = append(res, slice[i])
@@ -134,8 +134,8 @@ func Filter[T any](slice []T, predicateFn func(elem T) bool) []T {
 // satisfying the given predicate.
 //
 // This function is the opposite of Filter().
-func FilterOut[T any](slice []T, predicateFn func(elem T) bool) []T {
-	var res []T
+func FilterOut[S ~[]E, E any](slice S, predicateFn func(elem E) bool) S {
+	var res S
 	for i := range slice {
 		if !predicateFn(slice[i]) {
 			res = append(res, slice[i])
@@ -146,8 +146,8 @@ func FilterOut[T any](slice []T, predicateFn func(elem T) bool) []T {
 
 // Uniq returns a copy of the given slice containing all unique elements.
 // The type of the slice elements must be comparable.
-func Uniq[T comparable](slice []T) []T {
-	var res []T
+func Uniq[S ~[]E, E comparable](slice S) S {
+	var res S
 	for i := range slice {
 		if !Includes(res, slice[i]) {
 			res = append(res, slice[i])
@@ -158,10 +158,10 @@ func Uniq[T comparable](slice []T) []T {
 
 // Uniq returns a copy of the given slice containing all unique elements.
 // The type of the slice elements must be comparable.
-func UniqFunc[T any](slice []T, equalsFn func(n, m T) bool) []T {
-	var res []T
+func UniqFunc[S ~[]E, E any](slice S, equalsFn func(n, m E) bool) S {
+	var res S
 	for i := range slice {
-		if !IncludesFunc(res, func(elem T) bool { return equalsFn(slice[i], elem) }) {
+		if !IncludesFunc(res, func(elem E) bool { return equalsFn(slice[i], elem) }) {
 			res = append(res, slice[i])
 		}
 	}
@@ -170,7 +170,7 @@ func UniqFunc[T any](slice []T, equalsFn func(n, m T) bool) []T {
 
 // Overlap returns true if two slices have at least one common element.
 // The type of the slice elements must be comparable.
-func Overlap[T comparable](a, b []T) bool {
+func Overlap[S ~[]E, E comparable](a, b S) bool {
 	for i := range a {
 		if Includes(b, a[i]) {
 			return true
@@ -182,7 +182,11 @@ func Overlap[T comparable](a, b []T) bool {
 
 // OverlapFunc returns true if two slices have at least one common element.
 // The elements are compared using the given function, equalsFn.
-func OverlapFunc[T, S any](a []T, b []S, equalsFn func(e1 T, e2 S) bool) bool {
+func OverlapFunc[S1 ~[]E1, S2 ~[]E2, E1, E2 any](
+	a S1,
+	b S2,
+	equalsFn func(e1 E1, e2 E2) bool,
+) bool {
 	for i := range a {
 		for j := range b {
 			if equalsFn(a[i], b[j]) {
@@ -196,8 +200,8 @@ func OverlapFunc[T, S any](a []T, b []S, equalsFn func(e1 T, e2 S) bool) bool {
 
 // Intersect returns the intersection of two slices.
 // The type of the slice elements must be comparable.
-func Intersect[T comparable](a, b []T) []T {
-	var res []T
+func Intersect[S ~[]E, E comparable](a, b S) S {
+	var res S
 	for i := range a {
 		if !Includes(res, a[i]) && Includes(b, a[i]) {
 			res = append(res, a[i])
@@ -208,8 +212,12 @@ func Intersect[T comparable](a, b []T) []T {
 
 // Intersect returns the intersection of two slices.
 // The elements are compared using the given function, equalsFn.
-func IntersectFunc[T comparable, S any](a []T, b []S, equalsFn func(e1 T, e2 S) bool) []T {
-	var res []T
+func IntersectFunc[S1 ~[]E1, S2 ~[]E2, E1 comparable, E2 any](
+	a S1,
+	b S2,
+	equalsFn func(e1 E1, e2 E2) bool,
+) S1 {
+	var res S1
 
 OuterLoop:
 	for i := range a {
@@ -230,8 +238,8 @@ OuterLoop:
 
 // Diff returns the difference between the given slices: a - b.
 // The type of the slice elements must be comparable.
-func Diff[T comparable](a, b []T) []T {
-	var res []T
+func Diff[S ~[]E, E comparable](a, b S) S {
+	var res S
 	for i := range a {
 		if !Includes(b, a[i]) {
 			res = append(res, a[i])
@@ -242,10 +250,14 @@ func Diff[T comparable](a, b []T) []T {
 
 // DiffFunc returns the difference between the given slices: a - b.
 // The elements are compared using the given function, equalsFn.
-func DiffFunc[T, S any](a []T, b []S, equalsFn func(e1 T, e2 S) bool) []T {
-	var res []T
+func DiffFunc[S1 ~[]E1, S2 ~[]E2, E1, E2 any](
+	a S1,
+	b S2,
+	equalsFn func(e1 E1, e2 E2) bool,
+) S1 {
+	var res S1
 	for i := range a {
-		if !IncludesFunc(b, func(elem S) bool { return equalsFn(a[i], elem) }) {
+		if !IncludesFunc(b, func(elem E2) bool { return equalsFn(a[i], elem) }) {
 			res = append(res, a[i])
 		}
 	}

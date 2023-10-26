@@ -168,7 +168,8 @@ func UniqFunc[S ~[]E, E any](s S, equalsFn func(n, m E) bool) S {
 	return res
 }
 
-// Overlap returns true if two slices have at least one common element.
+// Overlap returns true if two slices have at least one common element:
+// s1 ∩ s2 ≠ ∅.
 // The type of the slice elements must be comparable.
 func Overlap[S ~[]E, E comparable](s1, s2 S) bool {
 	for i := range s1 {
@@ -180,7 +181,8 @@ func Overlap[S ~[]E, E comparable](s1, s2 S) bool {
 	return false
 }
 
-// OverlapFunc returns true if two slices have at least one common element.
+// OverlapFunc returns true if two slices have at least one common element:
+// s1 ∩ s2 ≠ ∅.
 // The elements are compared using the given function, equalsFn.
 func OverlapFunc[S1 ~[]E1, S2 ~[]E2, E1, E2 any](
 	s1 S1,
@@ -198,7 +200,7 @@ func OverlapFunc[S1 ~[]E1, S2 ~[]E2, E1, E2 any](
 	return false
 }
 
-// Intersect returns the intersection of two slices.
+// Intersect returns the intersection of two slices: s1 ∩ s2.
 // The type of the slice elements must be comparable.
 func Intersect[S ~[]E, E comparable](s1, s2 S) S {
 	var res S
@@ -210,7 +212,7 @@ func Intersect[S ~[]E, E comparable](s1, s2 S) S {
 	return res
 }
 
-// Intersect returns the intersection of two slices.
+// Intersect returns the intersection of two slices: s1 ∩ s2.
 // The elements are compared using the given function, equalsFn.
 func IntersectFunc[S1 ~[]E1, S2 ~[]E2, E1 comparable, E2 any](
 	s1 S1,
